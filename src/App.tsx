@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/index";
 import Navbar from "./components/navbar";
 import Careers from "./pages/careers";
@@ -23,45 +23,68 @@ import Requirements from "./pages/Requirements";
 import FAQ from "./pages/FAQ";
 import CareerAssessment from "./pages/CareerAssessment";
 import HowToJoin from "./pages/HowToJoin";
+import Personnel from "./pages/Personnel";
+import Inquiries from "./pages/Inquiries";
+
+// About sub-pages
+import Mission from "./pages/Mission";
+import Values from "./pages/Values";
+import Standards from "./pages/Standards";
+
+// Special Operations Category Page
+import SpecialOperations from "./pages/SpecialOperations";
+
+function AppContent() {
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/personnel";
+
+  return (
+    <div className="min-h-screen bg-zinc-950 text-white">
+      {!hideNavbar && <Navbar />}
+      
+      <main>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/careers/special-operations" element={<SpecialOperations />} />
+          <Route path="/videos" element={<Videos />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/apply" element={<Apply />} />
+          <Route path="/personnel" element={<Personnel />} />
+
+          <Route path="/how-to-join" element={<HowToJoin />} />
+          <Route path="/requirements" element={<Requirements />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/career-assessment" element={<CareerAssessment />} />
+          <Route path="/inquiries" element={<Inquiries />} />
+
+          {/* About sub-pages */}
+          <Route path="/about/mission" element={<Mission />} />
+          <Route path="/about/values" element={<Values />} />
+          <Route path="/about/standards" element={<Standards />} />
+
+          <Route path="/careers/navy" element={<NavyCareers />} />
+          <Route path="/careers/navy/seal" element={<NavySeal />} />
+          <Route path="/careers/navy/eod" element={<NavyEod />} />
+          <Route path="/careers/navy/corpsman" element={<NavyCorpsman />} />
+
+          <Route path="/careers/airforce" element={<AirForceCareers />} />
+          <Route path="/careers/airforce/cct" element={<AirForceCct />} />
+          <Route path="/careers/airforce/pj" element={<AirForcePj />} />
+
+          <Route path="/careers/army" element={<ArmyCareers />} />
+          <Route path="/careers/army/special-aviator" element={<ArmySpecialAviator />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-zinc-950 text-white">
-        <Navbar />
-        
-        <main>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/videos" element={<Videos />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/apply" element={<Apply />} />
-
-            {/* New Routes */}
-            <Route path="/how-to-join" element={<HowToJoin />} />
-            <Route path="/requirements" element={<Requirements />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/career-assessment" element={<CareerAssessment />} />
-
-            {/* Navy Sub Pages */}
-            <Route path="/careers/navy" element={<NavyCareers />} />
-            <Route path="/careers/navy/seal" element={<NavySeal />} />
-            <Route path="/careers/navy/eod" element={<NavyEod />} />
-            <Route path="/careers/navy/corpsman" element={<NavyCorpsman />} />
-
-            {/* Air Force Sub Pages */}
-            <Route path="/careers/airforce" element={<AirForceCareers />} />
-            <Route path="/careers/airforce/cct" element={<AirForceCct />} />
-            <Route path="/careers/airforce/pj" element={<AirForcePj />} />
-
-            {/* Army Sub Page */}
-            <Route path="/careers/army" element={<ArmyCareers />} />
-            <Route path="/careers/army/special-aviator" element={<ArmySpecialAviator />} />
-          </Routes>
-        </main>
-      </div>
+      <AppContent />
     </BrowserRouter>
   );
 }

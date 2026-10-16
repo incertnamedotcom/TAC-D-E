@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Reset default browser margins and ensure no extra space */
+/* Reset */
 html, body {
   margin: 0;
   padding: 0;
@@ -11,6 +11,16 @@ html, body {
 
 * {
   box-sizing: border-box;
+}
+
+/* ===== TRIGAR FONT ===== */
+@font-face {
+  font-family: 'Trigar';
+  src: url('/fonts/Trigar-Regular.woff2') format('woff2'),
+       url('/fonts/Trigar-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 @layer base {
@@ -68,7 +78,6 @@ html, body {
     font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   }
 
-  /* Force dark background on the html/body for this military site */
   html {
     background-color: #000000;
   }

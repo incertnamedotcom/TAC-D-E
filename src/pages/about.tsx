@@ -1,69 +1,151 @@
 import { motion } from "motion/react";
+import { useEffect } from "react";
 
-const About = () => {
+export default function About() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white relative">
       
-      {/* Background Image */}
+      {/* Fine white-dot grain */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ 
-          backgroundImage: "url('https://i.imgur.com/c4TOmPr.jpg')",
-          filter: "brightness(0.65) contrast(1.1)"
+        className="pointer-events-none absolute inset-0 opacity-[0.022] z-0"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
       />
 
-      {/* Dark overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/90" />
-
-      <div className="relative z-10 pt-32 pb-32 px-6">
-        <div className="max-w-4xl mx-auto">
-          
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+      {/* ── HERO ── */}
+      <section className="relative h-[100svh] flex items-center justify-center overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(https://i.imgur.com/DCjut3E.jpeg)` }}
+        />
+        <div className="absolute inset-0 bg-black/65" />
+        
+        <div className="relative z-10 text-center px-6">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-20"
+            transition={{ duration: 0.9, ease: "easeOut" }}
+            className="font-heading text-6xl md:text-8xl lg:text-9xl tracking-wide text-white leading-none"
           >
-            <p className="text-red-600 text-sm uppercase tracking-[0.125em] mb-3">
-              TACDEV
-            </p>
-            <h1 className="font-serif text-6xl md:text-7xl font-black tracking-widest text-white uppercase">
-              ABOUT US
-            </h1>
-            <div className="w-12 h-px bg-red-600 mx-auto mt-8" />
-          </motion.div>
-
-          {/* Main Content */}
-          <div className="prose prose-invert max-w-none text-lg leading-relaxed text-zinc-200">
-            <p className="text-xl font-light mb-10">
-              Tactical Development &amp; Evaluations Group (TACD&amp;E) is a premier Arma 3 milsim organization modeled after real-world Naval Special Warfare development elements. Established to replicate the standards and operational mindset of top-tier special mission units, we operate within a structured NSW-style framework focused on precision, discipline, and realism.
-            </p>
-
-            <p className="mb-8">
-              Our core mission is the development, testing, and refinement of advanced tactics, techniques, and procedures (TTPs). We emphasize analytical thinking, adaptability, and high-level execution across complex operational environments. Every scenario we run is designed not just to simulate combat, but to evaluate and evolve how it is conducted.
-            </p>
-
-            <p className="mb-8">
-              TACD&amp;E specializes in high-end special operations, including direct action, reconnaissance, and mission-focused tasking that demands coordination, communication, and technical proficiency. Members are expected to operate at a professional standard, contributing to both individual performance and organizational advancement.
-            </p>
-
-            <p>
-              We are not just a unit—we are a development-driven organization committed to continuous improvement, realism, and excellence in every operation.
-            </p>
-          </div>
-
-          {/* Closing Statement */}
-          <div className="mt-24 pt-12 border-t border-red-900/30 text-center">
-            <p className="text-red-600 text-sm uppercase tracking-[0.2em]">
-              PRECISION • DISCIPLINE • EXCELLENCE
-            </p>
-          </div>
-
+            ABOUT
+          </motion.h1>
         </div>
+      </section>
+
+      {/* ── CONTENT ── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pb-28 pt-24">
+
+        {/* ── OUR MISSION ── */}
+        <motion.section
+          id="mission"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mb-32 scroll-mt-32"
+        >
+          <p className="text-[#b91c1c] text-sm uppercase tracking-[0.25em] mb-4 font-medium">
+            Who We Are
+          </p>
+          
+          <h2 className="font-heading text-4xl md:text-5xl tracking-wide text-white mb-6">
+            OUR MISSION
+          </h2>
+          
+          <div className="w-14 h-[2px] bg-[#b91c1c] mb-10" />
+
+          <p className="text-white/70 text-base md:text-lg leading-relaxed max-w-3xl">
+            The United States is a maritime nation, and the U.S. Navy protects America at sea. Alongside our allies and partners, we defend freedom, preserve economic prosperity and keep the seas open and free.
+          </p>
+        </motion.section>
+
+        {/* ── OUR VALUES ── */}
+        <motion.section
+          id="values"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mb-32 scroll-mt-32"
+        >
+          <p className="text-[#b91c1c] text-sm uppercase tracking-[0.25em] mb-4 font-medium">
+            What We Stand For
+          </p>
+          
+          <h2 className="font-heading text-4xl md:text-5xl tracking-wide text-white mb-6">
+            OUR VALUES
+          </h2>
+          
+          <div className="w-14 h-[2px] bg-[#b91c1c] mb-12" />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div>
+              <h3 className="font-heading text-2xl tracking-wide text-white mb-4">
+                HONOR
+              </h3>
+              <p className="text-white/65 text-base leading-relaxed">
+                We are accountable for our actions and the actions of those we lead. We conduct ourselves in the highest ethical manner in all relationships.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-heading text-2xl tracking-wide text-white mb-4">
+                COURAGE
+              </h3>
+              <p className="text-white/65 text-base leading-relaxed">
+                Courage is the value that gives us the moral and mental strength to do what is right, even in the face of personal or professional adversity.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-heading text-2xl tracking-wide text-white mb-4">
+                COMMITMENT
+              </h3>
+              <p className="text-white/65 text-base leading-relaxed">
+                The day-to-day duty of every man and woman is to join together as a team to improve the quality of our work, our people, and ourselves.
+              </p>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* ── OUR STANDARDS ── */}
+        <motion.section
+          id="standards"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mb-20 scroll-mt-32"
+        >
+          <p className="text-[#b91c1c] text-sm uppercase tracking-[0.25em] mb-4 font-medium">
+            How We Operate
+          </p>
+          
+          <h2 className="font-heading text-4xl md:text-5xl tracking-wide text-white mb-6">
+            OUR STANDARDS
+          </h2>
+          
+          <div className="w-14 h-[2px] bg-[#b91c1c] mb-10" />
+
+          <div className="space-y-6 text-white/70 text-base md:text-lg leading-relaxed max-w-3xl">
+            <p>
+              The standard is deliberate. Training is realistic. The work is not for everyone.
+            </p>
+            <p>
+              We maintain the highest levels of professionalism, discipline, and accountability. Every operator is expected to uphold the unit’s reputation through consistent performance, integrity, and mutual trust.
+            </p>
+            <p>
+              There are no shortcuts. Excellence is the minimum requirement.
+            </p>
+          </div>
+        </motion.section>
+
       </div>
     </div>
   );
-};
-
-export default About;
+}
