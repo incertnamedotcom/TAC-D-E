@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 
-const WEBHOOK_URL =
-  "https://discord.com/api/webhooks/1542908569693978714/hTIfakw3EWWDW6e7QWpT2Hd4pnqrsjj9RrEbkpEjpiuT3kSR18obY5FJoYoyjTy4lt_i";
-
 const DISCORD = "https://discord.gg/8HpRpHsHVT";
 const FOOTER_LOGO = "https://i.ibb.co/DP0007hy/footer-logo-1.png";
 const DISCORD_CLIENT_ID = "1560566512857915472";
@@ -149,7 +146,7 @@ const Apply = () => {
     };
 
     try {
-      await fetch(WEBHOOK_URL, {
+      const res = await fetch("/api/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -157,6 +154,11 @@ const Apply = () => {
           embeds: [embed],
         }),
       });
+
+      if (!res.ok) {
+        throw new Error("Failed to submit");
+      }
+
       setSubmitted(true);
     } catch (err) {
       alert("Something went wrong. Please try again or contact us on Discord.");
