@@ -16,12 +16,15 @@ const Inquiries = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setStatus("sending");
 
     try {
       const response = await fetch("/api/inquiries", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           embeds: [
             {
@@ -40,6 +43,9 @@ const Inquiries = () => {
         }),
       });
 
+      const data = await response.json().catch(() => ({}));
+      console.log("API response:", response.status, data);
+
       if (response.ok) {
         setStatus("success");
         setFormData({ name: "", discord: "", subject: "", question: "" });
@@ -47,6 +53,7 @@ const Inquiries = () => {
         setStatus("error");
       }
     } catch (err) {
+      console.error(err);
       setStatus("error");
     }
   };
