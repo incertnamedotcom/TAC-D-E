@@ -6,7 +6,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
-
   if (!webhookUrl) {
     return res.status(500).json({ error: 'Webhook not configured' });
   }
