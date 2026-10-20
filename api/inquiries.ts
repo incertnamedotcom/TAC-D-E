@@ -7,9 +7,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const webhookUrl = process.env.DISCORD_WEBHOOK_URL2;
 
+  // Debug: tell us if the env var is missing
   if (!webhookUrl) {
-    console.error('DISCORD_WEBHOOK_URL2 is missing');
-    return res.status(500).json({ error: 'Webhook not configured' });
+    console.error('DISCORD_WEBHOOK_URL2 is missing or empty');
+    return res.status(500).json({ error: 'Webhook not configured - env var missing' });
+  }
+
+  if (!webhookUrl.startsWith('https://discord.com/api/webhooks/')) {
+    console.error('DISCORD_WEBHOOK_URL2 does not look like a valid Discord webhook');
+    return res.status(500).json({ error: 'Webhook URL invalid format' });
   }
 
   try {
@@ -19,15 +25,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: JSON.stringify(req.body),
     });
 
+    const text = await response.text();
+
     if (!response.ok) {
-      const text = await response.text();
-      console.error('Discord webhook failed:', response.status, text);
-      return res.status(500).json({ error: 'Failed to send to Discord' });
+      console.error('Discord rejected the request:', response.status, text);
+      return res.status(500).json({ 
+        error: 'Discord webhook failed', 
+        status: response.status,
+        details: text 
+      });
     }
 
     return res.status(200).json({ success: true });
-  } catch (err) {
-    console.error('Inquiries API error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+  } catch (err: any) {
+    console.error('Fetch error:', err?.message || err);
+    return res.status(500).json({ error: 'Fetch failed', details: err?.message });
   }
 }
