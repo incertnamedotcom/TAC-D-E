@@ -22,7 +22,6 @@ import ArmySpecialAviator from "./pages/careers/army/special-aviator";
 import Requirements from "./pages/Requirements";
 import FAQ from "./pages/FAQ";
 import CareerAssessment from "./pages/CareerAssessment";
-import HowToJoin from "./pages/HowToJoin";
 import Personnel from "./pages/Personnel";
 import Inquiries from "./pages/Inquiries";
 
@@ -53,7 +52,6 @@ function AppContent() {
           <Route path="/apply" element={<Apply />} />
           <Route path="/personnel" element={<Personnel />} />
 
-          <Route path="/how-to-join" element={<HowToJoin />} />
           <Route path="/requirements" element={<Requirements />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/career-assessment" element={<CareerAssessment />} />

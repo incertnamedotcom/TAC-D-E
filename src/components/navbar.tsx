@@ -7,6 +7,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   
   const contactRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
@@ -32,6 +33,23 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Lock page scroll while the mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
+  // Close the mobile menu if the window grows to desktop size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setMobileOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(path + "/");
 
@@ -47,10 +65,36 @@ const linkClass = (path?: string) =>
     path && isActive(path) ? 'text-[#b91c1c]' : 'text-white'
   }`;
 
+  const mobileSections: { heading?: string; items: { label: string; path: string }[] }[] = [
+    {
+      heading: 'About',
+      items: [
+        { label: 'OUR MISSION', path: '/about/mission' },
+        { label: 'OUR VALUES', path: '/about/values' },
+        { label: 'OUR STANDARDS', path: '/about/standards' },
+      ],
+    },
+    {
+      items: [
+        { label: 'CAREERS', path: '/careers' },
+        { label: 'VIDEOS', path: '/videos' },
+        { label: 'PHOTO GALLERY', path: '/gallery' },
+      ],
+    },
+    {
+      heading: 'Contact',
+      items: [
+        { label: 'INQUIRIES', path: '/inquiries' },
+        { label: 'FAQ', path: '/faq' },
+      ],
+    },
+    { items: [{ label: 'PERSCOM', path: '/personnel' }] },
+  ];
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        scrolled && !mobileOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
       <div className="pt-6 md:pt-7 px-6 md:px-12 pb-4 flex items-start justify-between">
@@ -226,9 +270,81 @@ const linkClass = (path?: string) =>
 
         {/* Mobile Menu */}
         <div className="md:hidden pt-1">
-          <button className="text-white text-3xl">☰</button>
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={mobileOpen}
+            className="text-white text-3xl leading-none px-1"
+          >
+            ☰
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu overlay */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-[60] bg-black/95 overflow-y-auto"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+        >
+          <div className="px-6 pt-6 pb-12 min-h-full flex flex-col">
+            <div className="flex items-center justify-between">
+              <Link to="/" onClick={() => setMobileOpen(false)}>
+                <img
+                  src="https://i.imgur.com/xEtxsCw.png"
+                  alt="TACDEV"
+                  className="h-20 w-auto object-contain"
+                />
+              </Link>
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                aria-label="Close menu"
+                className="text-white text-3xl leading-none px-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="mt-10 flex-1 space-y-8">
+              {mobileSections.map((section, i) => (
+                <div key={i}>
+                  {section.heading && (
+                    <p className="text-white/40 text-xs uppercase tracking-[0.3em] mb-3">
+                      {section.heading}
+                    </p>
+                  )}
+                  <div className="space-y-1">
+                    {section.items.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setMobileOpen(false)}
+                        className={`block py-2.5 font-['Barlow',sans-serif] text-2xl font-semibold tracking-[0.12em] uppercase ${
+                          isActive(item.path) ? 'text-[#b91c1c]' : 'text-white'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              to="/apply"
+              onClick={() => setMobileOpen(false)}
+              className="mt-10 block text-center border border-[#b91c1c] text-[#b91c1c] font-['Barlow',sans-serif] text-lg font-semibold tracking-[0.2em] uppercase py-4 hover:bg-[#b91c1c] hover:text-white transition-colors"
+            >
+              START YOUR JOURNEY
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

@@ -8,7 +8,7 @@ const NAVBAR_COIN = "https://i.imgur.com/xEtxsCw.png";
 
 export default function Index() {
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white">
+    <div className="min-h-screen flex flex-col bg-black text-white font-['Barlow',sans-serif]">
       
       {/* ── FULL-SCREEN IMAGE ── */}
       <section className="relative min-h-screen overflow-hidden">
@@ -24,49 +24,39 @@ export default function Index() {
         <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black to-transparent z-10" />
       </section>
 
-      {/* ── ABOUT US ── */}
-      <section id="about" className="relative min-h-screen flex items-center overflow-hidden">
-        <motion.div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
-          style={{ backgroundImage: `url(https://i.imgur.com/DCjut3E.jpeg)` }}
-          initial={{ y: 0 }}
-          whileInView={{ y: -40 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: 1.4, ease: "easeOut" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black to-transparent z-10" />
+{/* ── ABOUT US ── */}
+<section id="about" className="relative min-h-screen flex items-center overflow-hidden">
+  <motion.div
+    className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
+    style={{ backgroundImage: `url(https://i.imgur.com/DCjut3E.jpeg)` }}
+    initial={{ y: 0 }}
+    whileInView={{ y: -40 }}
+    viewport={{ once: false, amount: 0.3 }}
+    transition={{ duration: 1.4, ease: "easeOut" }}
+  />
+  <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
+  <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black to-transparent z-10" />
 
-        <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-32">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.9, ease: "easeOut" }}
-            className="max-w-2xl"
-          >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-[2px] bg-[#b91c1c]" />
-              <p className="text-[#b91c1c] text-sm uppercase tracking-[0.25em] font-medium">
-                NAVAL SPECIAL WARFARE
-              </p>
-            </div>
+  <div className="relative z-20 w-full max-w-[90rem] mx-auto px-6 md:px-12 lg:px-16 py-32">
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 0.9, ease: "easeOut" }}
+      className="max-w-4xl"
+    >
+      <h2 className="font-heading text-5xl md:text-7xl tracking-wide text-white mb-8 leading-none">
+        ABOUT US
+      </h2>
 
-            <h2 className="font-heading text-5xl md:text-7xl tracking-wide text-white mb-8 leading-none">
-              ABOUT US
-            </h2>
-
-            <div className="space-y-6 text-white/85 text-lg md:text-xl leading-relaxed">
-              <p>
-                Tactical Development & Evaluations Group is a Naval Special Warfare–styled unit built around the structure and standards of a DEVGRU element. We focus on tactics development, evaluation of TTPs, and the execution of high-end special operations.
-              </p>
-              <p>
-                The standard is deliberate. Training is realistic. The work is not for everyone.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      <div className="text-white/85 text-base md:text-lg leading-relaxed">
+        <p>
+          We are a Naval Special Warfare based organization modeled on the structure and standards of Naval Special Warfare Development Group. We develop tactics, techniques, and procedures in a realistic, immersive setting built around professionalism and teamwork, with real expectations for performance, commitment, and accountability.
+        </p>
+      </div>
+    </motion.div>
+  </div>
+</section>
 
       {/* ── APPLY NOW (CTA) ── */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-black">
@@ -125,10 +115,9 @@ export default function Index() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="w-full bg-black border-t border-zinc-800 mt-auto">
+      <footer className="w-full bg-black border-t border-white/10 mt-auto font-['Barlow',sans-serif]">
         <div className="w-full px-3 sm:px-5 md:px-8 lg:px-10 xl:px-12">
 
-          {/* Top half */}
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 py-14 md:py-16">
             <div className="flex-shrink-0">
               <img 
@@ -139,22 +128,19 @@ export default function Index() {
             </div>
 
             <div className="lg:max-w-xl xl:max-w-2xl">
-              <h4 className="text-white text-sm uppercase tracking-[0.3em] font-medium mb-4 text-left">
+              <h4 className="text-white text-xs uppercase tracking-[0.3em] font-semibold mb-4 text-left">
                 MISSION
               </h4>
-              <p className="text-white/70 text-sm md:text-base leading-relaxed text-left">
+              <p className="text-white/65 text-sm md:text-[15px] leading-relaxed text-left">
                 The United States is a maritime nation, and the U.S. Navy protects America at sea. Alongside our allies and partners, we defend freedom, preserve economic prosperity and keep the seas open and free.
               </p>
             </div>
           </div>
 
-          {/* Separator */}
-          <div className="border-t border-zinc-700" />
+          <div className="border-t border-white/10" />
 
-          {/* Bottom half */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 py-12 md:py-14 items-start">
             
-            {/* Coin Logo */}
             <div className="md:col-span-2 flex items-start">
               <img
                 src={NAVBAR_COIN}
@@ -163,56 +149,46 @@ export default function Index() {
               />
             </div>
 
-            {/* RECRUITMENT */}
             <div className="md:col-span-2 md:col-start-4">
-              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-medium mb-5">
+              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-semibold mb-5">
                 Recruitment
               </h4>
               <div className="space-y-3">
-                <Link to="/how-to-join" className="block text-sm tracking-widest text-white/75 hover:text-white transition-colors">
-                  How to Join
-                </Link>
-                <Link to="/requirements" className="block text-sm tracking-widest text-white/75 hover:text-white transition-colors">
+                <Link to="/requirements" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Requirements
                 </Link>
-                <a href={DISCORD} target="_blank" rel="noopener noreferrer" className="block text-sm tracking-widest text-white/75 hover:text-white transition-colors">
+                <Link to="/apply" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Apply Now
-                </a>
+                </Link>
               </div>
             </div>
 
-            {/* GET IN TOUCH */}
             <div className="md:col-span-2">
-              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-medium mb-5">
+              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-semibold mb-5">
                 Get in Touch
               </h4>
               <div className="space-y-3">
-                <Link to="/faq" className="block text-sm tracking-widest text-white/75 hover:text-white transition-colors">
+                <Link to="/faq" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   FAQs
                 </Link>
-                <Link to="/career-assessment" className="block text-sm tracking-widest text-white/75 hover:text-white transition-colors">
+                <Link to="/career-assessment" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Career Assessment
                 </Link>
-                <a href={DISCORD} target="_blank" rel="noopener noreferrer" className="block text-sm tracking-widest text-white/75 hover:text-white transition-colors">
-                  Find a Recruiter
-                </a>
-                <a href={DISCORD} target="_blank" rel="noopener noreferrer" className="block text-sm tracking-widest text-white/75 hover:text-white transition-colors">
+                <Link to="/inquiries" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Contact
-                </a>
+                </Link>
               </div>
             </div>
 
-            {/* CONNECT */}
             <div className="md:col-span-3 md:col-start-10">
-              <h4 className="text-white text-sm uppercase tracking-[0.3em] font-medium mb-1">
+              <h4 className="text-white text-xs uppercase tracking-[0.3em] font-semibold mb-1">
                 Connect
               </h4>
-              <p className="text-white/45 text-xs tracking-widest uppercase mb-6">
+              <p className="text-white/40 text-xs tracking-[0.2em] uppercase mb-6">
                 Get Social With Us
               </p>
               
               <div className="flex items-center gap-5">
-                {/* Instagram */}
                 <a 
                   href="https://www.instagram.com/development_evaluations.4/" 
                   target="_blank" 
@@ -225,7 +201,6 @@ export default function Index() {
                   </svg>
                 </a>
 
-                {/* YouTube */}
                 <a 
                   href="https://www.youtube.com/@tacde4" 
                   target="_blank" 
@@ -238,7 +213,6 @@ export default function Index() {
                   </svg>
                 </a>
 
-                {/* Discord */}
                 <a 
                   href={DISCORD} 
                   target="_blank" 
@@ -247,17 +221,16 @@ export default function Index() {
                   aria-label="Discord"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0 a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.874.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.874.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
                   </svg>
                 </a>
               </div>
             </div>
           </div>
 
-          {/* Bottom legal bar */}
-          <div className="border-t border-zinc-800 py-8">
+          <div className="border-t border-white/10 py-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <p className="text-white/35 text-xs tracking-wider">
+              <p className="text-white/35 text-xs tracking-[0.15em]">
                 © 2026 TACDEV
               </p>
               

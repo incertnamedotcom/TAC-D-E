@@ -7,6 +7,7 @@ const Inquiries = () => {
     discord: "",
     subject: "",
     question: "",
+    website: "", // honeypot, hidden from real visitors
   });
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
@@ -25,30 +26,12 @@ const Inquiries = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          embeds: [
-            {
-              title: "New Inquiry",
-              color: 0xb91c1c,
-              fields: [
-                { name: "Name", value: formData.name || "—", inline: true },
-                { name: "Discord", value: formData.discord || "—", inline: true },
-                { name: "Subject", value: formData.subject || "—", inline: false },
-                { name: "Message", value: formData.question || "—", inline: false },
-              ],
-              timestamp: new Date().toISOString(),
-              footer: { text: "TACDEV Inquiries" },
-            },
-          ],
-        }),
+        body: JSON.stringify(formData),
       });
-
-      const data = await response.json().catch(() => ({}));
-      console.log("API response:", response.status, data);
 
       if (response.ok) {
         setStatus("success");
-        setFormData({ name: "", discord: "", subject: "", question: "" });
+        setFormData({ name: "", discord: "", subject: "", question: "", website: "" });
       } else {
         setStatus("error");
       }
@@ -145,6 +128,18 @@ const Inquiries = () => {
               className="w-full bg-transparent border border-white/15 px-5 py-4 text-white text-lg focus:outline-none focus:border-white/40 transition-colors resize-none"
             />
           </div>
+
+          {/* Honeypot: hidden from people, bots fill it in */}
+          <input
+            type="text"
+            name="website"
+            value={formData.website}
+            onChange={handleChange}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="hidden"
+          />
 
           {/* Submit */}
           <div className="pt-6 flex items-center gap-8">

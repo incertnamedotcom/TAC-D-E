@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "motion/react";
 
 const DISCORD = "https://discord.gg/8HpRpHsHVT";
 const FOOTER_LOGO = "https://i.ibb.co/DP0007hy/footer-logo-1.png";
+const HERO_IMAGE = "https://i.imgur.com/DCjut3E.jpeg";
+const GUTTER = "px-6 md:px-12 lg:px-20 xl:px-28";
 const DISCORD_CLIENT_ID = "1560566512857915472";
 const REDIRECT_URI = encodeURIComponent(window.location.origin + "/apply");
 
@@ -26,6 +28,8 @@ const Apply = () => {
   const [submitted, setSubmitted] = useState(false);
   const [discordUser, setDiscordUser] = useState<DiscordUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
+  const [applicationNumber, setApplicationNumber] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     fullName: "",
@@ -41,7 +45,6 @@ const Apply = () => {
     agreeFalseInfo: false,
   });
 
-  // Handle Discord OAuth callback
   useEffect(() => {
     const handleAuth = async () => {
       const hash = window.location.hash.substring(1);
@@ -62,6 +65,7 @@ const Apply = () => {
               global_name: user.global_name,
               avatar: user.avatar,
             });
+            setToken(accessToken);
             setStep("form");
             window.history.replaceState({}, document.title, "/apply");
           }
@@ -99,7 +103,7 @@ const Apply = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!discordUser) {
+    if (!discordUser || !token) {
       alert("You must be logged in with Discord to submit.");
       return;
     }
@@ -111,77 +115,58 @@ const Apply = () => {
 
     setLoading(true);
 
-    const careerLabel =
-      careerPaths.find((c) => c.value === form.careerPath)?.label || form.careerPath;
-
-    const displayName = discordUser.global_name || discordUser.username;
-
-    // Sequential number using localStorage
-    const currentYear = new Date().getFullYear();
-    const storageKey = `tacdev-app-counter-${currentYear}`;
-    let counter = parseInt(localStorage.getItem(storageKey) || "0", 10);
-    counter += 1;
-    localStorage.setItem(storageKey, counter.toString());
-
-    const applicationNumber = `NSW-${currentYear}-${counter.toString().padStart(4, "0")}`;
-
-    const embed = {
-      title: `ENLISTMENT FORM  •  ${applicationNumber}`,
-      color: 0xb91c1c,
-      description: "A new enlistment application has been submitted for review.",
-      fields: [
-        { name: "Full Name", value: form.fullName || "—", inline: true },
-        { name: "Discord", value: `${displayName} (@${discordUser.username})`, inline: true },
-        { name: "Discord ID", value: discordUser.id, inline: true },
-        { name: "Preferred Career Path", value: careerLabel || "—", inline: false },
-        { name: "Why do you want to join our organization?", value: form.reason || "—", inline: false },
-        { name: "How long have you been playing Arma 3?", value: form.armaExperience || "—", inline: false },
-        { name: "Are you currently participating in any other Arma 3 units?", value: form.otherUnits || "—", inline: false },
-        { name: "Do you have any prior milsim experience? If so, list them.", value: form.milsimExperience || "—", inline: false },
-        { name: "What does Honor, Courage & Commitment mean to you?", value: form.values || "—", inline: false },
-        { name: "How did you find out about our organization?", value: form.howFound || "—", inline: false },
-      ],
-      footer: { text: "TACDEV  •  Naval Special Warfare Enlistment System" },
-      timestamp: new Date().toISOString(),
-    };
-
     try {
       const res = await fetch("/api/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: `**ENLISTMENT APPLICATION RECEIVED**\nApplicant: <@${discordUser.id}>\nForm ID: \`${applicationNumber}\``,
-          embeds: [embed],
-        }),
+        body: JSON.stringify({ accessToken: token, form }),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to submit");
+      const data: { error?: string; applicationNumber?: string } = await res
+        .json()
+        .catch(() => ({}));
+
+      if (res.status === 401) {
+        setDiscordUser(null);
+        setToken(null);
+        setStep("landing");
+        alert("Your Discord login expired. Please log in again.");
+        return;
       }
 
+      if (!res.ok) {
+        alert(data.error || "Something went wrong. Please try again or contact us on Discord.");
+        return;
+      }
+
+      setApplicationNumber(data.applicationNumber ?? null);
       setSubmitted(true);
-    } catch (err) {
+    } catch {
       alert("Something went wrong. Please try again or contact us on Discord.");
     } finally {
       setLoading(false);
     }
   };
 
-  // ── SUCCESS SCREEN ──
   if (submitted) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6">
+      <div className="min-h-screen bg-black text-white font-['Barlow',sans-serif] flex items-center justify-center px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center max-w-lg"
         >
-          <h1 className="font-heading text-5xl md:text-6xl mb-6 tracking-wide">
+          <h1 className="text-4xl md:text-5xl font-semibold uppercase tracking-tight mb-6">
             APPLICATION RECEIVED
           </h1>
           <p className="text-white/70 text-lg mb-10 leading-relaxed">
             Your application has been submitted. A recruiter will review it and contact you on Discord.
           </p>
+          {applicationNumber && (
+            <p className="text-white/40 text-sm tracking-widest uppercase mb-10">
+              Form ID: {applicationNumber}
+            </p>
+          )}
           <Link
             to="/"
             className="inline-block border border-white/60 text-white text-xs font-semibold tracking-[0.2em] uppercase px-8 py-3 hover:border-[#b91c1c] hover:text-[#b91c1c] transition-all duration-300"
@@ -195,19 +180,16 @@ const Apply = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white font-['Barlow',sans-serif] flex items-center justify-center">
         <p className="text-white/50 tracking-widest text-sm uppercase">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
+    <div className="min-h-screen bg-black text-white font-['Barlow',sans-serif] flex flex-col">
       
       <AnimatePresence mode="wait">
-        {/* ══════════════════════════════════════
-            LANDING VIEW
-        ══════════════════════════════════════ */}
         {step === "landing" && (
           <motion.div
             key="landing"
@@ -217,54 +199,62 @@ const Apply = () => {
             transition={{ duration: 0.4 }}
             className="flex-1 flex flex-col"
           >
-            {/* Top Header */}
-            <section className="relative pt-40 pb-24 px-6 text-center">
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-                className="font-heading text-5xl sm:text-6xl md:text-7xl tracking-wide text-white uppercase leading-none"
-              >
-                START YOUR JOURNEY
-              </motion.h1>
+            {/* Hero */}
+            <section className="relative overflow-hidden border-b border-white/10">
+              <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: `url(${HERO_IMAGE})` }}
+              />
+              <div className="absolute inset-0 bg-black/50" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+
+              <div className={`relative ${GUTTER} pt-56 md:pt-64 lg:pt-72 pb-24 md:pb-28 text-center`}>
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7 }}
+                  className="text-5xl sm:text-6xl md:text-7xl font-semibold uppercase tracking-tight leading-[1.02]"
+                >
+                  Start Your Journey
+                </motion.h1>
+              </div>
             </section>
 
             {/* Become an Operator */}
-            <section className="bg-black py-20 px-6 border-t border-zinc-800">
+            <section className="bg-black py-28 px-6 border-t border-white/5">
               <div className="max-w-2xl mx-auto text-center">
-                <h2 className="font-heading text-3xl md:text-4xl tracking-wide text-white uppercase mb-5">
-                  BECOME AN OPERATOR
+                <h2 className="text-3xl md:text-4xl font-semibold uppercase tracking-tight text-white mb-6">
+                  Begin Your Application
                 </h2>
-                <p className="text-white/55 text-base md:text-lg leading-relaxed mb-10">
-                  Login with Discord to begin the application process and connect with a TACDEV recruiter.
+                <p className="text-white/55 text-base md:text-lg leading-relaxed mb-12">
+                  Log in with Discord to start your enlistment application. A recruiter reviews
+                  every application and contacts you on Discord.
                 </p>
 
                 <button
                   onClick={loginWithDiscord}
-                  className="inline-flex items-center gap-3 border border-white/60 text-white text-xs font-semibold tracking-[0.25em] uppercase px-10 py-3.5 hover:border-[#5865F2] hover:text-[#5865F2] transition-all duration-300"
+                  className="inline-flex items-center gap-3 border border-white/50 text-white text-xs font-semibold tracking-[0.25em] uppercase px-10 py-3.5 hover:border-[#5865F2] hover:text-[#5865F2] transition-all duration-300"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.874.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
                   </svg>
-                  LOGIN WITH DISCORD
+                  Login with Discord
                 </button>
               </div>
             </section>
 
-            {/* Divider */}
             <div className="bg-black px-6">
-              <div className="max-w-md mx-auto border-t border-zinc-700" />
+              <div className="max-w-md mx-auto border-t border-white/10" />
             </div>
 
             {/* Talk to a Recruiter */}
-            <section className="bg-black py-20 px-6 flex-1">
+            <section className="bg-black py-28 px-6 flex-1">
               <div className="max-w-4xl mx-auto text-center">
-                <h2 className="font-heading text-3xl md:text-4xl tracking-wide text-white uppercase mb-5">
-                  TALK TO A RECRUITER
+                <h2 className="text-3xl md:text-4xl font-semibold uppercase tracking-tight text-white mb-6">
+                  Talk to a Recruiter
                 </h2>
-                <p className="text-white/55 text-base max-w-2xl mx-auto mb-14 leading-relaxed">
-                  Have a question? Want to learn more about TACDEV? 
-                  Our recruiters are standing by to help.
+                <p className="text-white/55 text-base max-w-2xl mx-auto mb-16 leading-relaxed">
+                  Questions before you apply? Get in touch with us directly.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -272,38 +262,32 @@ const Apply = () => {
                     href={DISCORD}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex flex-col items-center justify-center border border-zinc-700 hover:border-[#b91c1c]/50 bg-zinc-950/40 py-12 px-6 transition-all duration-300"
+                    className="group flex flex-col items-center justify-center border border-white/10 hover:border-[#b91c1c]/50 bg-black py-14 px-6 transition-all duration-300"
                   >
                     <svg className="w-7 h-7 text-white/50 group-hover:text-[#b91c1c] transition-colors mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
-                    <span className="text-sm tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">
-                      Discord
-                    </span>
+                    <span className="text-sm tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">Discord</span>
                   </a>
 
                   <Link
                     to="/inquiries"
-                    className="group flex flex-col items-center justify-center border border-zinc-700 hover:border-[#b91c1c]/50 bg-zinc-950/40 py-12 px-6 transition-all duration-300"
+                    className="group flex flex-col items-center justify-center border border-white/10 hover:border-[#b91c1c]/50 bg-black py-14 px-6 transition-all duration-300"
                   >
                     <svg className="w-7 h-7 text-white/50 group-hover:text-[#b91c1c] transition-colors mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <span className="text-sm tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">
-                      Inquiries
-                    </span>
+                    <span className="text-sm tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">Inquiries</span>
                   </Link>
 
                   <Link
                     to="/faq"
-                    className="group flex flex-col items-center justify-center border border-zinc-700 hover:border-[#b91c1c]/50 bg-zinc-950/40 py-12 px-6 transition-all duration-300"
+                    className="group flex flex-col items-center justify-center border border-white/10 hover:border-[#b91c1c]/50 bg-black py-14 px-6 transition-all duration-300"
                   >
                     <svg className="w-7 h-7 text-white/50 group-hover:text-[#b91c1c] transition-colors mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span className="text-sm tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">
-                      FAQs
-                    </span>
+                    <span className="text-sm tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">FAQs</span>
                   </Link>
                 </div>
               </div>
@@ -311,9 +295,6 @@ const Apply = () => {
           </motion.div>
         )}
 
-        {/* ══════════════════════════════════════
-            APPLICATION FORM VIEW
-        ══════════════════════════════════════ */}
         {step === "form" && discordUser && (
           <motion.div
             key="form"
@@ -323,18 +304,16 @@ const Apply = () => {
             transition={{ duration: 0.4 }}
             className="flex-1"
           >
-            {/* Form Header */}
-            <section className="pt-36 pb-12 px-6 border-b border-zinc-800">
+            <section className="pt-40 md:pt-44 pb-14 px-6 border-b border-white/10">
               <div className="max-w-3xl mx-auto text-center">
                 <p className="text-[#b91c1c] text-sm uppercase tracking-[0.3em] mb-4 font-medium">
                   ENLISTMENT
                 </p>
-                <h1 className="font-heading text-4xl md:text-5xl tracking-wide text-white uppercase mb-6">
+                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white uppercase mb-6">
                   APPLICATION FORM
                 </h1>
 
-                {/* Logged in user */}
-                <div className="inline-flex items-center gap-3 bg-zinc-900 border border-zinc-700 px-5 py-2.5 rounded-full">
+                <div className="inline-flex items-center gap-3 bg-black border border-white/15 px-5 py-2.5 rounded-full">
                   {discordUser.avatar ? (
                     <img
                       src={`https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`}
@@ -342,7 +321,7 @@ const Apply = () => {
                       className="w-7 h-7 rounded-full"
                     />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-zinc-700" />
+                    <div className="w-7 h-7 rounded-full bg-white/10" />
                   )}
                   <span className="text-sm text-white/80">
                     {discordUser.global_name || discordUser.username}
@@ -352,11 +331,9 @@ const Apply = () => {
               </div>
             </section>
 
-            {/* Form */}
-            <section className="py-16 px-6">
+            <section className="py-20 px-6">
               <div className="max-w-3xl mx-auto">
                 <form onSubmit={handleSubmit} className="space-y-10">
-                  
                   <div>
                     <label className="block text-sm font-medium tracking-[0.15em] text-white/70 mb-3 uppercase">
                       Full Name
@@ -379,13 +356,13 @@ const Apply = () => {
                       value={form.careerPath}
                       onChange={handleChange}
                       required
-                      className="w-full bg-zinc-950 border border-white/20 focus:border-white/50 outline-none px-4 py-3.5 text-white transition-colors"
+                      className="w-full bg-black border border-white/20 focus:border-white/50 outline-none px-4 py-3.5 text-white transition-colors"
                     >
-                      <option value="" disabled className="bg-zinc-950">
+                      <option value="" disabled className="bg-black">
                         Select a path
                       </option>
                       {careerPaths.map((path) => (
-                        <option key={path.value} value={path.value} className="bg-zinc-950">
+                        <option key={path.value} value={path.value} className="bg-black">
                           {path.label}
                         </option>
                       ))}
@@ -473,7 +450,6 @@ const Apply = () => {
                     />
                   </div>
 
-                  {/* AGREEMENTS */}
                   <div className="pt-10 border-t border-white/10">
                     <h3 className="text-sm font-medium tracking-[0.2em] text-white/70 mb-8 uppercase">
                       Agreements
@@ -541,8 +517,7 @@ const Apply = () => {
         )}
       </AnimatePresence>
 
-      {/* ── FOOTER ── */}
-      <footer className="w-full bg-black border-t border-zinc-800 mt-auto">
+      <footer className="w-full bg-black border-t border-white/10 mt-auto">
         <div className="w-full px-3 sm:px-5 md:px-8 lg:px-10 xl:px-12">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 py-14 md:py-16">
             <div className="flex-shrink-0">
@@ -556,7 +531,7 @@ const Apply = () => {
             </div>
           </div>
 
-          <div className="border-t border-zinc-700" />
+          <div className="border-t border-white/10" />
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-6 py-12 md:py-14">
             <div className="md:col-span-2 space-y-6">
@@ -606,7 +581,7 @@ const Apply = () => {
             </div>
           </div>
 
-          <div className="border-t border-zinc-800 py-8">
+          <div className="border-t border-white/10 py-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <p className="text-white/35 text-xs tracking-wider">© 2026 TACDEV. All rights reserved.</p>
               <p className="text-white/30 text-[11px] leading-relaxed max-w-3xl text-left md:text-right">
