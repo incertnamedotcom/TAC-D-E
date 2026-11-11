@@ -1,15 +1,65 @@
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const DISCORD_CLIENT_ID = "1560566512857915472";
+const REDIRECT_URI = encodeURIComponent(window.location.origin + "/inquiries");
+
+interface DiscordUser {
+  id: string;
+  username: string;
+  global_name: string | null;
+  avatar: string | null;
+}
 
 const Inquiries = () => {
   const [formData, setFormData] = useState({
     name: "",
-    discord: "",
     subject: "",
     question: "",
-    website: "", // honeypot, hidden from real visitors
+    website: "",
   });
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [discordUser, setDiscordUser] = useState<DiscordUser | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleAuth = async () => {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const accessToken = params.get("access_token");
+
+      if (accessToken) {
+        try {
+          const res = await fetch("https://discord.com/api/users/@me", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+
+          if (res.ok) {
+            const user = await res.json();
+            setDiscordUser({
+              id: user.id,
+              username: user.username,
+              global_name: user.global_name,
+              avatar: user.avatar,
+            });
+            setToken(accessToken);
+            // Name left blank — user enters Full Name manually
+            window.history.replaceState({}, document.title, "/inquiries");
+            setAuthLoading(false);
+            return;
+          }
+        } catch (err) {
+          console.error("Failed to fetch Discord user", err);
+        }
+      }
+
+      const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=token&scope=identify`;
+      window.location.href = authUrl;
+    };
+
+    handleAuth();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,21 +68,57 @@ const Inquiries = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!discordUser || !token) {
+      const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=token&scope=identify`;
+      window.location.href = authUrl;
+      return;
+    }
+
+    if (formData.website) {
+      setStatus("success");
+      return;
+    }
+
     setStatus("sending");
 
     try {
       const response = await fetch("/api/inquiries", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          embeds: [
+            {
+              title: "New Inquiry",
+              color: 0xb91c1c,
+              fields: [
+                { name: "Full Name", value: formData.name || "—", inline: true },
+                {
+                  name: "Discord",
+                  value: `${discordUser.global_name || discordUser.username} (@${discordUser.username})`,
+                  inline: true,
+                },
+                { name: "Discord ID", value: discordUser.id, inline: true },
+                { name: "Subject", value: formData.subject || "—" },
+                { name: "Message", value: formData.question || "—" },
+              ],
+              timestamp: new Date().toISOString(),
+            },
+          ],
+        }),
       });
 
       if (response.ok) {
         setStatus("success");
-        setFormData({ name: "", discord: "", subject: "", question: "", website: "" });
+        setFormData({
+          name: "",
+          subject: "",
+          question: "",
+          website: "",
+        });
       } else {
+        const err = await response.json().catch(() => ({}));
+        console.error("Inquiry failed:", err);
         setStatus("error");
       }
     } catch (err) {
@@ -41,11 +127,18 @@ const Inquiries = () => {
     }
   };
 
+  if (authLoading || !discordUser) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p className="text-white/50 tracking-widest text-sm uppercase">Connecting to Discord...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-black text-white pt-36 pb-24 px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-black text-white pt-36 pb-24 px-6 md:px-12 lg:px-20 font-['Barlow',sans-serif]">
       <div className="max-w-6xl mx-auto">
         
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,9 +151,24 @@ const Inquiries = () => {
             INQUIRIES
           </h1>
           <div className="w-20 h-px bg-white/20 mt-8" />
+
+          <div className="mt-8 inline-flex items-center gap-3 border border-white/15 px-5 py-2.5 rounded-full">
+            {discordUser.avatar ? (
+              <img
+                src={`https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`}
+                alt="Avatar"
+                className="w-7 h-7 rounded-full"
+              />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-white/10" />
+            )}
+            <span className="text-sm text-white/80">
+              {discordUser.global_name || discordUser.username}
+            </span>
+            <span className="text-xs text-white/40">@{discordUser.username}</span>
+          </div>
         </motion.div>
 
-        {/* Form */}
         <motion.form
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -68,38 +176,22 @@ const Inquiries = () => {
           onSubmit={handleSubmit}
           className="space-y-12"
         >
-          {/* Name + Discord */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div>
-              <label className="block text-[13px] uppercase tracking-[0.2em] text-white/50 mb-3">
-                Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full bg-transparent border border-white/15 px-5 py-4 text-white text-lg focus:outline-none focus:border-white/40 transition-colors"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[13px] uppercase tracking-[0.2em] text-white/50 mb-3">
-                Discord Username <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="discord"
-                required
-                value={formData.discord}
-                onChange={handleChange}
-                className="w-full bg-transparent border border-white/15 px-5 py-4 text-white text-lg focus:outline-none focus:border-white/40 transition-colors"
-              />
-            </div>
+          {/* Contact Information */}
+          <div>
+            <label className="block text-sm md:text-base uppercase tracking-[0.2em] text-white mb-4 font-medium">
+              Contact Information
+            </label>
+            <input
+              type="text"
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Full Name"
+              className="w-full bg-transparent border border-white/15 px-5 py-4 text-white text-lg md:text-xl placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-colors"
+            />
           </div>
 
-          {/* Subject */}
           <div>
             <label className="block text-[13px] uppercase tracking-[0.2em] text-white/50 mb-3">
               Subject <span className="text-red-500">*</span>
@@ -114,7 +206,6 @@ const Inquiries = () => {
             />
           </div>
 
-          {/* Message */}
           <div>
             <label className="block text-[13px] uppercase tracking-[0.2em] text-white/50 mb-3">
               Message <span className="text-red-500">*</span>
@@ -129,7 +220,7 @@ const Inquiries = () => {
             />
           </div>
 
-          {/* Honeypot: hidden from people, bots fill it in */}
+          {/* Honeypot */}
           <input
             type="text"
             name="website"
@@ -141,8 +232,7 @@ const Inquiries = () => {
             className="hidden"
           />
 
-          {/* Submit */}
-          <div className="pt-6 flex items-center gap-8">
+          <div className="pt-6 flex flex-col sm:flex-row sm:items-center gap-6">
             <button
               type="submit"
               disabled={status === "sending"}
@@ -152,7 +242,9 @@ const Inquiries = () => {
             </button>
 
             {status === "success" && (
-              <p className="text-green-500 text-sm">Inquiry submitted successfully.</p>
+              <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-md">
+                Your inquiry has been received. A member of the recruitment staff will contact you shortly.
+              </p>
             )}
             {status === "error" && (
               <p className="text-red-500 text-sm">Something went wrong. Please try again.</p>
