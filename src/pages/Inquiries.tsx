@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 
 const DISCORD_CLIENT_ID = "1560566512857915472";
 const REDIRECT_URI = encodeURIComponent(window.location.origin + "/inquiries");
+const AUTH_URL = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=token&scope=identify`;
 
 interface DiscordUser {
   id: string;
@@ -54,8 +55,7 @@ const Inquiries = () => {
         }
       }
 
-      const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=token&scope=identify`;
-      window.location.href = authUrl;
+      window.location.href = AUTH_URL;
     };
 
     handleAuth();
@@ -70,8 +70,7 @@ const Inquiries = () => {
     e.stopPropagation();
 
     if (!discordUser || !token) {
-      const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=token&scope=identify`;
-      window.location.href = authUrl;
+      window.location.href = AUTH_URL;
       return;
     }
 
@@ -87,24 +86,11 @@ const Inquiries = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          embeds: [
-            {
-              title: "New Inquiry",
-              color: 0xb91c1c,
-              fields: [
-                { name: "Full Name", value: formData.name || "—", inline: true },
-                {
-                  name: "Discord",
-                  value: `${discordUser.global_name || discordUser.username} (@${discordUser.username})`,
-                  inline: true,
-                },
-                { name: "Discord ID", value: discordUser.id, inline: true },
-                { name: "Subject", value: formData.subject || "—" },
-                { name: "Message", value: formData.question || "—" },
-              ],
-              timestamp: new Date().toISOString(),
-            },
-          ],
+          name: formData.name,
+          subject: formData.subject,
+          question: formData.question,
+          website: formData.website,
+          token, // server verifies this with Discord and builds the identity itself
         }),
       });
 
@@ -118,7 +104,12 @@ const Inquiries = () => {
         });
       } else {
         const err = await response.json().catch(() => ({}));
-        console.error("Inquiry failed:", err);
+        console.error("Inquiry failed:", response.status, err);
+        // Token expired / invalid -> re-authenticate
+        if (response.status === 401) {
+          window.location.href = AUTH_URL;
+          return;
+        }
         setStatus("error");
       }
     } catch (err) {
@@ -138,7 +129,6 @@ const Inquiries = () => {
   return (
     <div className="min-h-screen bg-black text-white pt-36 pb-24 px-6 md:px-12 lg:px-20 font-['Barlow',sans-serif]">
       <div className="max-w-6xl mx-auto">
-        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -185,6 +175,7 @@ const Inquiries = () => {
               type="text"
               name="name"
               required
+              maxLength={200}
               value={formData.name}
               onChange={handleChange}
               placeholder="Full Name"
@@ -200,6 +191,7 @@ const Inquiries = () => {
               type="text"
               name="subject"
               required
+              maxLength={200}
               value={formData.subject}
               onChange={handleChange}
               className="w-full bg-transparent border border-white/15 px-5 py-4 text-white text-lg focus:outline-none focus:border-white/40 transition-colors"
@@ -214,6 +206,7 @@ const Inquiries = () => {
               name="question"
               required
               rows={10}
+              maxLength={1000}
               value={formData.question}
               onChange={handleChange}
               className="w-full bg-transparent border border-white/15 px-5 py-4 text-white text-lg focus:outline-none focus:border-white/40 transition-colors resize-none"
