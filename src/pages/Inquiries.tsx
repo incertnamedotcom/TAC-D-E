@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const DISCORD_CLIENT_ID = "1560566512857915472";
 const REDIRECT_URI = encodeURIComponent(window.location.origin + "/inquiries");
@@ -12,6 +13,12 @@ interface DiscordUser {
   avatar: string | null;
 }
 
+interface SubmittedInquiry {
+  name: string;
+  subject: string;
+  question: string;
+}
+
 const Inquiries = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -19,7 +26,8 @@ const Inquiries = () => {
     question: "",
     website: "",
   });
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
+  const [submitted, setSubmitted] = useState<SubmittedInquiry | null>(null);
   const [discordUser, setDiscordUser] = useState<DiscordUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
@@ -45,7 +53,6 @@ const Inquiries = () => {
               avatar: user.avatar,
             });
             setToken(accessToken);
-            // Name left blank — user enters Full Name manually
             window.history.replaceState({}, document.title, "/inquiries");
             setAuthLoading(false);
             return;
@@ -61,6 +68,10 @@ const Inquiries = () => {
     handleAuth();
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [submitted]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -74,38 +85,43 @@ const Inquiries = () => {
       return;
     }
 
+    // Honeypot: pretend it worked
     if (formData.website) {
-      setStatus("success");
+      setSubmitted({
+        name: formData.name,
+        subject: formData.subject,
+        question: formData.question,
+      });
       return;
     }
 
     setStatus("sending");
+
+    // Copy what was typed BEFORE the form is cleared
+    const copy: SubmittedInquiry = {
+      name: formData.name.trim(),
+      subject: formData.subject.trim(),
+      question: formData.question.trim(),
+    };
 
     try {
       const response = await fetch("/api/inquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formData.name,
-          subject: formData.subject,
-          question: formData.question,
+          ...copy,
           website: formData.website,
-          token, // server verifies this with Discord and builds the identity itself
+          token,
         }),
       });
 
       if (response.ok) {
-        setStatus("success");
-        setFormData({
-          name: "",
-          subject: "",
-          question: "",
-          website: "",
-        });
+        setSubmitted(copy);
+        setStatus("idle");
+        setFormData({ name: "", subject: "", question: "", website: "" });
       } else {
         const err = await response.json().catch(() => ({}));
         console.error("Inquiry failed:", response.status, err);
-        // Token expired / invalid -> re-authenticate
         if (response.status === 401) {
           window.location.href = AUTH_URL;
           return;
@@ -126,6 +142,64 @@ const Inquiries = () => {
     );
   }
 
+  // ── Confirmation page ──
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-black text-white pt-36 pb-24 px-6 md:px-12 lg:px-20 font-['Barlow',sans-serif]">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-3xl mx-auto"
+        >
+          <p className="text-[#b91c1c] text-sm uppercase tracking-[0.3em] mb-4 font-medium">
+            Inquiry Sent
+          </p>
+          <h1 className="text-4xl md:text-5xl font-semibold uppercase tracking-tight mb-6">
+            INQUIRY RECEIVED
+          </h1>
+          <p className="text-white/70 text-lg leading-relaxed mb-12">
+            Your inquiry has been received. A member of the recruitment staff will contact you
+            shortly on Discord.
+          </p>
+
+          <div className="border border-white/15 bg-white/[0.02] p-6 md:p-8 space-y-8">
+            <div>
+              <p className="text-[11px] tracking-[0.2em] uppercase text-white/40 mb-2">Name</p>
+              <p className="text-white text-lg break-words">{submitted.name}</p>
+            </div>
+            <div>
+              <p className="text-[11px] tracking-[0.2em] uppercase text-white/40 mb-2">Subject</p>
+              <p className="text-white text-lg break-words">{submitted.subject}</p>
+            </div>
+            <div>
+              <p className="text-[11px] tracking-[0.2em] uppercase text-white/40 mb-2">Message</p>
+              <p className="text-white/90 text-lg leading-relaxed whitespace-pre-wrap break-words">
+                {submitted.question}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-12 flex flex-col sm:flex-row gap-4">
+            <Link
+              to="/"
+              className="inline-block text-center border border-white/60 text-white text-xs font-semibold tracking-[0.2em] uppercase px-8 py-3 hover:border-[#b91c1c] hover:text-[#b91c1c] transition-all duration-300"
+            >
+              RETURN HOME
+            </Link>
+            <button
+              type="button"
+              onClick={() => setSubmitted(null)}
+              className="inline-block text-center border border-white/20 text-white/60 text-xs font-semibold tracking-[0.2em] uppercase px-8 py-3 hover:border-white/50 hover:text-white transition-all duration-300"
+            >
+              SEND ANOTHER
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── Form page ──
   return (
     <div className="min-h-screen bg-black text-white pt-36 pb-24 px-6 md:px-12 lg:px-20 font-['Barlow',sans-serif]">
       <div className="max-w-6xl mx-auto">
@@ -166,7 +240,6 @@ const Inquiries = () => {
           onSubmit={handleSubmit}
           className="space-y-12"
         >
-          {/* Contact Information */}
           <div>
             <label className="block text-sm md:text-base uppercase tracking-[0.2em] text-white mb-4 font-medium">
               Contact Information
@@ -234,11 +307,6 @@ const Inquiries = () => {
               {status === "sending" ? "Sending..." : "Submit Inquiry"}
             </button>
 
-            {status === "success" && (
-              <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-md">
-                Your inquiry has been received. A member of the recruitment staff will contact you shortly.
-              </p>
-            )}
             {status === "error" && (
               <p className="text-red-500 text-sm">Something went wrong. Please try again.</p>
             )}
