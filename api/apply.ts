@@ -16,12 +16,13 @@ const LIMITS = {
   reason: 1000,
   armaExperience: 200,
   otherUnits: 300,
-  milsimExperience: 1000,
-  values: 1000,
   howFound: 300,
 } as const;
 
 type TextField = keyof typeof LIMITS;
+
+const MAX_PRIOR_UNITS = 6;
+const PRIOR_UNIT_FIELD_MAX = 100;
 
 interface DiscordUser {
   id: string;
@@ -44,6 +45,21 @@ function readText(source: Record<string, unknown>, key: TextField): string | nul
   const trimmed = value.trim();
   if (!trimmed || trimmed.length > LIMITS[key]) return null;
   return trimmed;
+}
+
+// Optional list of prior units. Returns a display string for the embed ("None" if empty).
+function readPriorUnits(value: unknown): string {
+  if (!Array.isArray(value)) return 'None';
+
+  const lines: string[] = [];
+  for (const item of value.slice(0, MAX_PRIOR_UNITS)) {
+    if (!isRecord(item)) continue;
+    const name = typeof item.name === 'string' ? item.name.trim().slice(0, PRIOR_UNIT_FIELD_MAX) : '';
+    const contact = typeof item.contact === 'string' ? item.contact.trim().slice(0, PRIOR_UNIT_FIELD_MAX) : '';
+    if (name || contact) lines.push(`• ${name || '—'} | ${contact || '—'}`);
+  }
+
+  return lines.length ? lines.join('\n').slice(0, 1024) : 'None';
 }
 
 // Asks Discord who the token belongs to, and makes sure it was issued to THIS app.
@@ -95,25 +111,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(429).json({ error: 'You already submitted recently. Please wait before trying again.' });
   }
 
-  // 3. Validate every field.
+  // 3. Validate every field, and report which ones failed.
   const form = body.form;
   const fullName = readText(form, 'fullName');
   const reason = readText(form, 'reason');
   const armaExperience = readText(form, 'armaExperience');
   const otherUnits = readText(form, 'otherUnits');
-  const milsimExperience = readText(form, 'milsimExperience');
-  const values = readText(form, 'values');
   const howFound = readText(form, 'howFound');
+  const priorUnits = readPriorUnits(form.priorUnits);
   const careerKey = typeof form.careerPath === 'string' ? form.careerPath : '';
   const careerLabel = CAREER_PATHS.get(careerKey) ?? null;
 
-  const agreed = form.agreeAccuracy === true && form.agreeInterview === true && form.agreeFalseInfo === true;
+  const agreed =
+    form.agreeAccuracy === true &&
+    form.agreeInterview === true &&
+    form.agreeFalseInfo === true &&
+    form.agreeNoDualMembership === true;
 
-  if (
-    !fullName || !reason || !armaExperience || !otherUnits ||
-    !milsimExperience || !values || !howFound || !careerLabel || !agreed
-  ) {
-    return res.status(400).json({ error: 'Invalid application' });
+  const problems: string[] = [];
+  if (!fullName) problems.push(`full name (max ${LIMITS.fullName} characters)`);
+  if (!careerLabel) problems.push('career path');
+  if (!reason) problems.push(`reason (max ${LIMITS.reason} characters)`);
+  if (!armaExperience) problems.push(`Arma 3 experience (max ${LIMITS.armaExperience} characters)`);
+  if (!otherUnits) problems.push(`other units (max ${LIMITS.otherUnits} characters)`);
+  if (!howFound) problems.push(`how you found us (max ${LIMITS.howFound} characters)`);
+  if (!agreed) problems.push('agreements');
+
+  if (problems.length > 0 || !fullName || !reason || !armaExperience || !otherUnits || !howFound || !careerLabel) {
+    return res.status(400).json({ error: `Invalid application. Please check: ${problems.join(', ')}.` });
   }
 
   // 4. The server builds the message. The browser cannot inject its own embeds or pings.
@@ -136,8 +161,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           { name: 'Why do you want to join our organization?', value: reason, inline: false },
           { name: 'How long have you been playing Arma 3?', value: armaExperience, inline: false },
           { name: 'Are you currently participating in any other Arma 3 units?', value: otherUnits, inline: false },
-          { name: 'Do you have any prior milsim experience? If so, list them.', value: milsimExperience, inline: false },
-          { name: 'What does Honor, Courage & Commitment mean to you?', value: values, inline: false },
+          { name: 'Prior Unit / Organization Affiliation (name | contact)', value: priorUnits, inline: false },
           { name: 'How did you find out about our organization?', value: howFound, inline: false },
         ],
         footer: { text: 'TACDEV  •  Naval Special Warfare Enlistment System' },
