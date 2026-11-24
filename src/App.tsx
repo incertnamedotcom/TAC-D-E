@@ -35,7 +35,7 @@ import SpecialOperations from "./pages/SpecialOperations";
 
 function AppContent() {
   const location = useLocation();
-  const hideNavbar = location.pathname === "/personnel";
+  const hideNavbar = location.pathname === "/personnel" || location.pathname === "/career-assessment";
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
@@ -81,7 +81,7 @@ function AppContent() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AppContent />
     </BrowserRouter>
   );

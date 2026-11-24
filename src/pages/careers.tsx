@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 
 const DISCORD = "https://discord.gg/8HpRpHsHVT";
-const HERO_BG = "https://i.ibb.co/Kz6qd30w/51512512.png";
+const HERO_BG = "https://i.imgur.com/xwc4W7E.png";
 const FOOTER_LOGO = "https://i.ibb.co/DP0007hy/footer-logo-1.png";
 const NAVBAR_COIN = "https://i.imgur.com/xEtxsCw.png";
 
@@ -11,7 +11,7 @@ const highPriorityRoles = [
   {
     slug: "eod",
     fullName: "Explosive Ordnance Disposal Technician",
-    image: "https://i.imgur.com/4H14H0j.jpg",
+    image: "https://i.imgur.com/oi3fCdr.jpeg",          // ← updated
     href: "/careers/navy/eod",
   },
   {
@@ -176,34 +176,51 @@ const Careers = () => {
       </section>
 
       {/* ── CAREER ASSESSMENT ── */}
-      <section className="relative bg-black py-16 md:py-20">
-        <div className="max-w-4xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="relative border border-zinc-800/80 bg-zinc-950/70 overflow-hidden"
-          >
-            <div className="px-8 py-12 md:px-16 md:py-14 text-center">
-              <p className="text-white/45 text-xs uppercase tracking-[0.25em] font-medium mb-4">
-                Not Sure Where to Start?
-              </p>
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white uppercase mb-5">
-                Career Assessment
+      <section className="relative bg-black py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            
+            {/* Left - Image (slightly larger + very subtle movement) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="relative overflow-hidden flex items-center justify-center"
+            >
+              <motion.img
+                src="https://i.imgur.com/9s5TVx8.png"
+                alt="Operators"
+                className="w-full max-h-[460px] object-contain"
+                initial={{ scale: 1.04, y: 0 }}
+                whileInView={{ scale: 1, y: -12 }}
+                viewport={{ once: false, amount: 0.4 }}
+                transition={{ duration: 1.6, ease: "easeOut" }}
+              />
+            </motion.div>
+
+            {/* Right - Text */}
+            <div className="flex flex-col justify-center">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white uppercase leading-tight mb-6">
+                Find Where<br />You Belong
               </h2>
-              <p className="text-white/50 text-sm md:text-base leading-relaxed mb-8 max-w-xl mx-auto">
-                Take a short assessment to help identify which special operations role 
+
+              <p className="text-white/60 text-sm md:text-base leading-relaxed mb-10 max-w-md">
+                Your strengths have a place here. Your potential has room to grow.
+                Take our Career Assessment to discover which special operations path
                 matches your background, skills, and goals.
               </p>
-              <Link
-                to="/career-assessment"
-                className="inline-block border border-white/30 text-white font-medium tracking-widest uppercase text-xs px-10 py-3.5 hover:bg-white hover:text-black transition-all duration-300"
-              >
-                Launch the Assessment
-              </Link>
+
+              <div>
+                <Link
+                  to="/career-assessment"
+                  className="inline-block bg-white hover:bg-[#b91c1c] text-black hover:text-white font-semibold tracking-widest uppercase text-xs px-8 py-3.5 transition-all duration-300"
+                >
+                  Launch the Assessment
+                </Link>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -215,30 +232,32 @@ const Careers = () => {
           </h2>
           <div className="w-8 h-[1px] bg-white/25 mx-auto mb-10" />
 
+          {/* Larger Special Operations box */}
           <div className="border border-zinc-800/80 bg-zinc-950/50 overflow-hidden">
             <button
               onClick={() => setSpecOpsOpen(!specOpsOpen)}
-              className="w-full flex items-center justify-between px-6 md:px-8 py-5 hover:bg-white/[0.02] transition-colors"
+              className="w-full flex items-center justify-between px-6 md:px-10 py-7 md:py-9 hover:bg-white/[0.02] transition-colors"
             >
-              <div className="flex items-center gap-5">
-                <div className="w-20 h-14 md:w-24 md:h-16 overflow-hidden flex-shrink-0 border border-zinc-700/80">
+              <div className="flex items-center gap-6 md:gap-8">
+                <div className="w-28 h-20 md:w-36 md:h-24 overflow-hidden flex-shrink-0 border border-zinc-700/80">
                   <img
-                    src="https://i.imgur.com/c4TOmPr.jpg"
+                    src="https://i.imgur.com/a0wAqVs.jpeg"
                     alt=""
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-base md:text-lg font-medium tracking-wide text-white uppercase">
+                  <h3 className="text-lg md:text-xl font-medium tracking-wide text-white uppercase">
                     Special Operations Careers
                   </h3>
-                  <p className="text-white/40 text-sm mt-1 max-w-md leading-relaxed">
+                  <p className="text-white/40 text-sm md:text-base mt-2 max-w-lg leading-relaxed">
                     Covert missions, explosive ordnance, maritime operations, and medical support.
                   </p>
                 </div>
               </div>
+
               <svg
-                className={`w-4 h-4 text-white/40 transition-transform duration-300 flex-shrink-0 ${specOpsOpen ? "rotate-45" : ""}`}
+                className={`w-5 h-5 text-white/40 transition-transform duration-300 flex-shrink-0 ${specOpsOpen ? "rotate-45" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -256,22 +275,22 @@ const Careers = () => {
                   transition={{ duration: 0.35 }}
                   className="overflow-hidden"
                 >
-                  <div className="border-t border-zinc-800 px-6 md:px-8 py-8">
-                    <h4 className="text-white/50 text-xs uppercase tracking-[0.2em] mb-2 font-medium">
+                  <div className="border-t border-zinc-800 px-6 md:px-10 py-10">
+                    <h4 className="text-white/50 text-xs uppercase tracking-[0.2em] mb-3 font-medium">
                       Available Paths
                     </h4>
-                    <p className="text-white/35 text-sm mb-7 max-w-xl leading-relaxed">
+                    <p className="text-white/35 text-sm mb-8 max-w-xl leading-relaxed">
                       Select a role to view requirements, training pipeline, and expectations.
                     </p>
 
-                    <div className="grid grid-cols-1 gap-y-3 mb-8">
+                    <div className="grid grid-cols-1 gap-y-4 mb-10">
                       {specialOpsRoles.map((role) => (
                         <Link
                           key={role.name}
                           to={role.href}
-                          className="group flex items-center gap-3 text-white/65 hover:text-white text-sm tracking-wide transition-colors py-1 font-medium"
+                          className="group flex items-center gap-3 text-white/65 hover:text-white text-base tracking-wide transition-colors py-1 font-medium"
                         >
-                          <span className="w-1 h-1 rounded-full bg-white/40 group-hover:bg-white transition-colors" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-white transition-colors" />
                           {role.name}
                         </Link>
                       ))}
@@ -279,10 +298,10 @@ const Careers = () => {
 
                     <Link
                       to="/careers/special-operations"
-                      className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-white/60 hover:text-white transition-colors font-medium"
+                      className="inline-flex items-center gap-2 text-sm tracking-widest uppercase text-white/60 hover:text-white transition-colors font-medium"
                     >
                       View Special Operations Category
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
                       </svg>
                     </Link>
@@ -294,7 +313,7 @@ const Careers = () => {
         </div>
       </section>
 
-      {/* ── FOOTER (from Index) ── */}
+      {/* ── FOOTER ── */}
       <footer className="w-full bg-black border-t border-white/10 mt-auto font-['Barlow',sans-serif]">
         <div className="w-full px-3 sm:px-5 md:px-8 lg:px-10 xl:px-12">
 
@@ -423,6 +442,6 @@ const Careers = () => {
       </footer>
     </div>
   );
-}
+};
 
 export default Careers;
