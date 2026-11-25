@@ -24,39 +24,39 @@ export default function Index() {
         <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black to-transparent z-10" />
       </section>
 
-{/* ── ABOUT US ── */}
-<section id="about" className="relative min-h-screen flex items-center overflow-hidden">
-  <motion.div
-    className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
-    style={{ backgroundImage: `url(https://i.imgur.com/DCjut3E.jpeg)` }}
-    initial={{ y: 0 }}
-    whileInView={{ y: -40 }}
-    viewport={{ once: false, amount: 0.3 }}
-    transition={{ duration: 1.4, ease: "easeOut" }}
-  />
-  <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
-  <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black to-transparent z-10" />
+      {/* ── ABOUT US ── */}
+      <section id="about" className="relative min-h-screen flex items-center overflow-hidden">
+        <motion.div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
+          style={{ backgroundImage: `url(https://i.imgur.com/DCjut3E.jpeg)` }}
+          initial={{ y: 0 }}
+          whileInView={{ y: -40 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 1.4, ease: "easeOut" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black to-transparent z-10" />
 
-  <div className="relative z-20 w-full max-w-[90rem] mx-auto px-6 md:px-12 lg:px-16 py-32">
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.4 }}
-      transition={{ duration: 0.9, ease: "easeOut" }}
-      className="max-w-4xl"
-    >
-      <h2 className="font-heading text-5xl md:text-7xl tracking-wide text-white mb-8 leading-none">
-        ABOUT US
-      </h2>
+        <div className="relative z-20 w-full max-w-[90rem] mx-auto px-6 md:px-12 lg:px-16 py-32">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+            className="max-w-4xl"
+          >
+            <h2 className="font-heading text-5xl md:text-7xl tracking-wide text-white mb-8 leading-none">
+              ABOUT US
+            </h2>
 
-      <div className="text-white/85 text-base md:text-lg leading-relaxed">
-        <p>
-          We are a Naval Special Warfare based organization modeled on the structure and standards of Naval Special Warfare Development Group. We develop tactics, techniques, and procedures in a realistic, immersive setting built around professionalism and teamwork, with real expectations for performance, commitment, and accountability.
-        </p>
-      </div>
-    </motion.div>
-  </div>
-</section>
+            <div className="text-white/85 text-base md:text-lg leading-relaxed">
+              <p>
+                We are a Naval Special Warfare based organization modeled on the structure and standards of Naval Special Warfare Development Group. We develop tactics, techniques, and procedures in a realistic, immersive setting built around professionalism and teamwork, with real expectations for performance, commitment, and accountability.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
       {/* ── APPLY NOW (CTA) ── */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-black">
@@ -114,7 +114,7 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ── FOOTER (slightly larger than original, not as big as last) ── */}
+      {/* ── FOOTER ── */}
       <footer className="w-full bg-black border-t border-white/10 mt-auto font-['Barlow',sans-serif]">
         <div className="w-full px-3 sm:px-5 md:px-8 lg:px-10 xl:px-12">
 
@@ -154,9 +154,6 @@ export default function Index() {
                 Recruitment
               </h4>
               <div className="space-y-3">
-                <Link to="/requirements" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
-                  Requirements
-                </Link>
                 <Link to="/apply" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Apply Now
                 </Link>
@@ -243,4 +240,4 @@ export default function Index() {
       </footer>
     </div>
   );
-};
+}

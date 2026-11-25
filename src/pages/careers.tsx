@@ -345,9 +345,6 @@ const Careers = () => {
                 Recruitment
               </h4>
               <div className="space-y-3">
-                <Link to="/requirements" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
-                  Requirements
-                </Link>
                 <Link to="/apply" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Apply Now
                 </Link>
@@ -434,6 +431,6 @@ const Careers = () => {
       </footer>
     </div>
   );
-};
+}
 
 export default Careers;

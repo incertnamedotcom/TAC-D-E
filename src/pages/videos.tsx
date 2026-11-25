@@ -143,9 +143,6 @@ const Videos = () => {
                 Recruitment
               </h4>
               <div className="space-y-3">
-                <Link to="/requirements" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
-                  Requirements
-                </Link>
                 <Link to="/apply" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Apply Now
                 </Link>
@@ -224,7 +221,7 @@ const Videos = () => {
               </p>
               
               <p className="text-white/30 text-[12px] leading-relaxed max-w-3xl text-left md:text-right">
-                TACDEV is a fictional Arma 3 community project. It is not affiliated with or endorsed by any real military or government organization.
+               TACDEV is a fictional Arma 3 community project. It is not affiliated with or endorsed by any real military or government organization.
               </p>
             </div>
           </div>
@@ -232,6 +229,5 @@ const Videos = () => {
       </footer>
     </div>
   );
-};
-
+}
 export default Videos;

@@ -200,7 +200,7 @@ export default function FAQ() {
         </div>
       </div>
 
-      {/* ── FOOTER ── */}
+      {/* ── FOOTER (slightly larger than original, not as big as last) ── */}
       <footer className="w-full bg-black border-t border-white/10 mt-auto font-['Barlow',sans-serif]">
         <div className="w-full px-3 sm:px-5 md:px-8 lg:px-10 xl:px-12">
 
@@ -242,6 +242,9 @@ export default function FAQ() {
               <div className="space-y-3">
                 <Link to="/requirements" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Requirements
+                </Link>
+                <Link to="/apply" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                  Apply Now
                 </Link>
               </div>
             </div>
@@ -318,7 +321,7 @@ export default function FAQ() {
               </p>
               
               <p className="text-white/30 text-[12px] leading-relaxed max-w-3xl text-left md:text-right">
-                TACDEV is an independent, fictional Arma 3 community project. We have no connection to DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any actual military organization. Everything on this site, including names, procedures, structure, branding, and content, is purely fictional and created for community purposes.
+               TACDEV is a fictional Arma 3 community project. It is not affiliated with or endorsed by any real military or government organization.
               </p>
             </div>
           </div>
@@ -326,4 +329,4 @@ export default function FAQ() {
       </footer>
     </div>
   );
-}
+};

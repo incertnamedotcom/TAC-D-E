@@ -323,7 +323,7 @@ export default function CareerAssessment() {
         )}
       </AnimatePresence>
 
-      {/* ── FOOTER (slightly larger than original, not as big as last) ── */}
+      {/* ── FOOTER ── */}
       <footer className="w-full bg-black border-t border-white/10 mt-auto font-['Barlow',sans-serif]">
         <div className="w-full px-3 sm:px-5 md:px-8 lg:px-10 xl:px-12">
 
@@ -363,9 +363,6 @@ export default function CareerAssessment() {
                 Recruitment
               </h4>
               <div className="space-y-3">
-                <Link to="/requirements" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
-                  Requirements
-                </Link>
                 <Link to="/apply" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Apply Now
                 </Link>
@@ -452,4 +449,4 @@ export default function CareerAssessment() {
       </footer>
     </div>
   );
-};
+}

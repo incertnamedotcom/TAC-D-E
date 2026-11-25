@@ -240,9 +240,6 @@ export default function FAQ() {
                 Recruitment
               </h4>
               <div className="space-y-3">
-                <Link to="/requirements" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
-                  Requirements
-                </Link>
                 <Link to="/apply" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Apply Now
                 </Link>
@@ -317,11 +314,11 @@ export default function FAQ() {
           <div className="border-t border-white/10 py-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <p className="text-white/40 text-xs tracking-[0.15em]">
-                © 2026 TACDEV
+                © 2026 NSWTACD&E
               </p>
               
               <p className="text-white/30 text-[12px] leading-relaxed max-w-3xl text-left md:text-right">
-                TACDEV is an independent, fictional Arma 3 community project. We have no connection to DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any actual military organization. Everything on this site, including names, procedures, structure, branding, and content, is purely fictional and created for community purposes.
+               TACDEV is a fictional Arma 3 community project. It is not affiliated with or endorsed by any real military or government organization.
               </p>
             </div>
           </div>

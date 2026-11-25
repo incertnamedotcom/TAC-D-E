@@ -6,7 +6,6 @@ const DISCORD = "https://discord.gg/8HpRpHsHVT";
 const FOOTER_LOGO = "https://i.ibb.co/DP0007hy/footer-logo-1.png";
 const NAVBAR_COIN = "https://i.imgur.com/xEtxsCw.png";
 const HERO_IMAGE = "https://i.imgur.com/NWP7SZN.png";
-const GUTTER = "px-6 md:px-12 lg:px-20 xl:px-28";
 const DISCORD_CLIENT_ID = "1560566512857915472";
 const REDIRECT_URI = encodeURIComponent(window.location.origin + "/apply");
 
@@ -124,7 +123,7 @@ const Apply = () => {
     e.preventDefault();
 
     if (!discordUser || !token) {
-      alert("You must be logged in with Discord to submit.");
+      alert("You must be logged in to submit.");
       return;
     }
 
@@ -160,19 +159,19 @@ const Apply = () => {
         setDiscordUser(null);
         setToken(null);
         setStep("landing");
-        alert("Your Discord login expired. Please log in again.");
+        alert("Your session expired. Please log in again.");
         return;
       }
 
       if (!res.ok) {
-        alert(data.error || "Something went wrong. Please try again or contact us on Discord.");
+        alert(data.error || "Something went wrong. Please try again.");
         return;
       }
 
       setApplicationNumber(data.applicationNumber ?? null);
       setSubmitted(true);
     } catch {
-      alert("Something went wrong. Please try again or contact us on Discord.");
+      alert("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -226,103 +225,127 @@ const Apply = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.5 }}
             className="flex-1 flex flex-col"
           >
-            {/* Hero */}
-            <section className="relative min-h-[70vh] md:min-h-[80vh] overflow-hidden">
+            {/* ── HERO ── */}
+            <section className="relative min-h-screen flex items-center overflow-hidden">
               <motion.div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: `url(${HERO_IMAGE})` }}
-                initial={{ y: 0 }}
-                whileInView={{ y: -40 }}
-                viewport={{ once: false, amount: 0.3 }}
-                transition={{ duration: 1.4, ease: "easeOut" }}
+                initial={{ scale: 1.08 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 1.8, ease: "easeOut" }}
               />
-              <div className="absolute inset-0 bg-black/35" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/25" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30" />
 
-              <div className={`relative z-10 ${GUTTER} pt-56 md:pt-64 lg:pt-72 pb-24 md:pb-28 text-center`}>
-                <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
+              <div className="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 pt-32 pb-24">
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7 }}
-                  className="text-5xl sm:text-6xl md:text-7xl font-semibold uppercase tracking-tight leading-[1.02]"
+                  transition={{ duration: 0.9, ease: "easeOut" }}
                 >
-                  Start Your Journey
-                </motion.h1>
+                  <h1 className="font-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wide text-white leading-none mb-8">
+                    START YOUR<br />JOURNEY
+                  </h1>
+
+                  <p className="text-white/70 text-lg md:text-xl max-w-xl leading-relaxed mb-12">
+                    Begin the formal application process. Every candidate is reviewed individually.
+                  </p>
+
+                  <button
+                    onClick={loginWithDiscord}
+                    className="group relative border border-white/40 hover:border-white text-white font-semibold tracking-[0.25em] uppercase text-xs sm:text-sm px-12 py-4 transition-all duration-300 hover:bg-white hover:text-black"
+                  >
+                    START NOW
+                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-[#b91c1c] group-hover:w-full transition-all duration-300" />
+                  </button>
+                </motion.div>
               </div>
             </section>
 
-            {/* Become an Operator */}
-            <section className="bg-black py-28 px-6">
-              <div className="max-w-2xl mx-auto text-center">
-                <h2 className="text-3xl md:text-4xl font-semibold uppercase tracking-tight text-white mb-6">
-                  Begin Your Application
+            {/* ── TALK TO A RECRUITER ── */}
+            <section className="bg-black py-28 md:py-36 px-6 border-t border-white/10">
+              <div className="max-w-5xl mx-auto text-center">
+                <h2 className="font-heading text-3xl md:text-4xl tracking-wide text-white uppercase mb-6">
+                  TALK TO A RECRUITER
                 </h2>
-                <p className="text-white/55 text-base md:text-lg leading-relaxed mb-12">
-                  Log in with Discord to start your enlistment application. A recruiter reviews
-                  every application and contacts you on Discord.
+                <p className="text-white/55 text-base md:text-lg max-w-2xl mx-auto mb-16 leading-relaxed">
+                  Have a question? Want to learn more about the organization? Recruiters are standing by to help. 
+                  Contact us if you need guidance before starting your application.
                 </p>
 
-                <button
-                  onClick={loginWithDiscord}
-                  className="inline-flex items-center gap-3 border border-white/50 text-white text-xs font-semibold tracking-[0.25em] uppercase px-10 py-3.5 hover:border-[#5865F2] hover:text-[#5865F2] transition-all duration-300"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.874.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-                  </svg>
-                  Login with Discord
-                </button>
-              </div>
-            </section>
-
-            <div className="bg-black px-6">
-              <div className="max-w-md mx-auto border-t border-white/10" />
-            </div>
-
-            {/* Talk to a Recruiter */}
-            <section className="bg-black py-28 px-6 flex-1">
-              <div className="max-w-4xl mx-auto text-center">
-                <h2 className="text-3xl md:text-4xl font-semibold uppercase tracking-tight text-white mb-6">
-                  Talk to a Recruiter
-                </h2>
-                <p className="text-white/55 text-base max-w-2xl mx-auto mb-16 leading-relaxed">
-                  Questions before you apply? Get in touch with us directly.
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  {/* Discord */}
                   <a
                     href={DISCORD}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex flex-col items-center justify-center border border-white/10 hover:border-[#b91c1c]/50 bg-black py-14 px-6 transition-all duration-300"
+                    className="group flex flex-col items-center justify-center border border-white/10 hover:border-white/25 bg-black/40 hover:bg-white/[0.03] py-20 md:py-24 px-6 transition-all duration-300"
                   >
-                    <svg className="w-7 h-7 text-white/50 group-hover:text-[#b91c1c] transition-colors mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    <svg
+                      className="w-8 h-8 text-white/50 mb-6 group-hover:text-white transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
                     </svg>
-                    <span className="text-sm tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">Discord</span>
+                    <span className="text-sm tracking-[0.2em] uppercase text-white/70 group-hover:text-white transition-colors">
+                      Discord
+                    </span>
                   </a>
 
+                  {/* Inquiries */}
                   <Link
                     to="/inquiries"
-                    className="group flex flex-col items-center justify-center border border-white/10 hover:border-[#b91c1c]/50 bg-black py-14 px-6 transition-all duration-300"
+                    className="group flex flex-col items-center justify-center border border-white/10 hover:border-white/25 bg-black/40 hover:bg-white/[0.03] py-20 md:py-24 px-6 transition-all duration-300"
                   >
-                    <svg className="w-7 h-7 text-white/50 group-hover:text-[#b91c1c] transition-colors mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    <svg
+                      className="w-8 h-8 text-white/50 mb-6 group-hover:text-white transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                      />
                     </svg>
-                    <span className="text-sm tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">Inquiries</span>
+                    <span className="text-sm tracking-[0.2em] uppercase text-white/70 group-hover:text-white transition-colors">
+                      Inquiries
+                    </span>
                   </Link>
 
+                  {/* FAQs */}
                   <Link
                     to="/faq"
-                    className="group flex flex-col items-center justify-center border border-white/10 hover:border-[#b91c1c]/50 bg-black py-14 px-6 transition-all duration-300"
+                    className="group flex flex-col items-center justify-center border border-white/10 hover:border-white/25 bg-black/40 hover:bg-white/[0.03] py-20 md:py-24 px-6 transition-all duration-300"
                   >
-                    <svg className="w-7 h-7 text-white/50 group-hover:text-[#b91c1c] transition-colors mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-8 h-8 text-white/50 mb-6 group-hover:text-white transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
-                    <span className="text-sm tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">FAQs</span>
+                    <span className="text-sm tracking-[0.2em] uppercase text-white/70 group-hover:text-white transition-colors">
+                      FAQs
+                    </span>
                   </Link>
                 </div>
               </div>
@@ -341,9 +364,6 @@ const Apply = () => {
           >
             <section className="pt-40 md:pt-44 pb-14 px-6 border-b border-white/10">
               <div className="max-w-3xl mx-auto text-center">
-                <p className="text-[#b91c1c] text-sm uppercase tracking-[0.3em] mb-4 font-medium">
-                  ENLISTMENT
-                </p>
                 <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white uppercase mb-6">
                   APPLICATION FORM
                 </h1>
@@ -444,7 +464,7 @@ const Apply = () => {
                     />
                   </div>
 
-                  {/* Prior Organizations — boxed */}
+                  {/* Prior Organizations */}
                   <div>
                     <label className="block text-sm font-medium tracking-[0.15em] text-white/70 mb-2 uppercase">
                       Prior Unit / Organization Affiliation
@@ -466,16 +486,16 @@ const Apply = () => {
 
                         {form.priorUnits.map((unit, index) => (
                           <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-<input
-  value={unit.name}
-  onChange={(e) => handlePriorUnitChange(index, "name", e.target.value)}
-  className="w-full bg-black/40 border border-white/15 focus:border-white/40 outline-none px-4 py-3.5 text-white transition-colors"
-/>
-<input
-  value={unit.contact}
-  onChange={(e) => handlePriorUnitChange(index, "contact", e.target.value)}
-  className="w-full bg-black/40 border border-white/15 focus:border-white/40 outline-none px-4 py-3.5 text-white transition-colors"
-/>
+                            <input
+                              value={unit.name}
+                              onChange={(e) => handlePriorUnitChange(index, "name", e.target.value)}
+                              className="w-full bg-black/40 border border-white/15 focus:border-white/40 outline-none px-4 py-3.5 text-white transition-colors"
+                            />
+                            <input
+                              value={unit.contact}
+                              onChange={(e) => handlePriorUnitChange(index, "contact", e.target.value)}
+                              className="w-full bg-black/40 border border-white/15 focus:border-white/40 outline-none px-4 py-3.5 text-white transition-colors"
+                            />
                           </div>
                         ))}
                       </div>
@@ -602,10 +622,10 @@ const Apply = () => {
             </div>
 
             <div className="lg:max-w-xl xl:max-w-2xl">
-              <h4 className="text-white text-xs uppercase tracking-[0.3em] font-semibold mb-4 text-left">
+              <h4 className="text-white text-[13px] uppercase tracking-[0.3em] font-semibold mb-4 text-left">
                 MISSION
               </h4>
-              <p className="text-white/65 text-sm md:text-[15px] leading-relaxed text-left">
+              <p className="text-white/65 text-[15px] md:text-base leading-relaxed text-left">
                 The United States is a maritime nation, and the U.S. Navy protects America at sea. Alongside our allies and partners, we defend freedom, preserve economic prosperity and keep the seas open and free.
               </p>
             </div>
@@ -624,41 +644,38 @@ const Apply = () => {
             </div>
 
             <div className="md:col-span-2 md:col-start-4">
-              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-semibold mb-5">
+              <h4 className="text-[#b91c1c] text-[13px] uppercase tracking-[0.25em] font-semibold mb-5">
                 Recruitment
               </h4>
               <div className="space-y-3">
-                <Link to="/requirements" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
-                  Requirements
-                </Link>
-                <Link to="/apply" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/apply" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Apply Now
                 </Link>
               </div>
             </div>
 
             <div className="md:col-span-2">
-              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-semibold mb-5">
+              <h4 className="text-[#b91c1c] text-[13px] uppercase tracking-[0.25em] font-semibold mb-5">
                 Get in Touch
               </h4>
               <div className="space-y-3">
-                <Link to="/faq" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/faq" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   FAQs
                 </Link>
-                <Link to="/career-assessment" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/career-assessment" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Career Assessment
                 </Link>
-                <Link to="/inquiries" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/inquiries" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Contact
                 </Link>
               </div>
             </div>
 
             <div className="md:col-span-3 md:col-start-10">
-              <h4 className="text-white text-xs uppercase tracking-[0.3em] font-semibold mb-1">
+              <h4 className="text-white text-[13px] uppercase tracking-[0.3em] font-semibold mb-1">
                 Connect
               </h4>
-              <p className="text-white/40 text-xs tracking-[0.2em] uppercase mb-6">
+              <p className="text-white/40 text-[13px] tracking-[0.2em] uppercase mb-6">
                 Get Social With Us
               </p>
               
@@ -704,12 +721,12 @@ const Apply = () => {
 
           <div className="border-t border-white/10 py-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <p className="text-white/35 text-xs tracking-[0.15em]">
-                © 2026 TACDEV
+              <p className="text-white/40 text-xs tracking-[0.15em]">
+                © 2026 NSWTACD&E
               </p>
               
-              <p className="text-white/30 text-[11px] leading-relaxed max-w-3xl text-left md:text-right">
-                TACDEV is an independent, fictional Arma 3 community project. We have no connection to DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any actual military organization. Everything on this site, including names, procedures, structure, branding, and content, is purely fictional and created for community purposes.
+              <p className="text-white/30 text-[12px] leading-relaxed max-w-3xl text-left md:text-right">
+                TACDEV is a fictional Arma 3 community project. It is not affiliated with or endorsed by any real military or government organization.
               </p>
             </div>
           </div>

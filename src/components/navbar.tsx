@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 
+const DISCORD = "https://discord.gg/8HpRpHsHVT";
+
 const Navbar = () => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
@@ -56,16 +58,15 @@ const Navbar = () => {
   const contactItems = [
     { label: "INQUIRIES", path: "/inquiries" },
     { label: "FAQ", path: "/faq" },
-    { label: "CONTACT INFORMATION", path: "/contact" },
+    { label: "CONTACT INFORMATION", href: DISCORD, external: true },
   ];
 
-  // Updated with Inter
-const linkClass = (path?: string) =>
-  `font-['Barlow',sans-serif] text-[18px] font-semibold tracking-[0.14em] uppercase transition-colors duration-200 hover:text-[#b91c1c] ${
-    path && isActive(path) ? 'text-[#b91c1c]' : 'text-white'
-  }`;
+  const linkClass = (path?: string) =>
+    `font-['Barlow',sans-serif] text-[18px] font-semibold tracking-[0.14em] uppercase transition-colors duration-200 hover:text-[#b91c1c] ${
+      path && isActive(path) ? 'text-[#b91c1c]' : 'text-white'
+    }`;
 
-  const mobileSections: { heading?: string; items: { label: string; path: string }[] }[] = [
+  const mobileSections: { heading?: string; items: { label: string; path?: string; href?: string; external?: boolean }[] }[] = [
     {
       heading: 'About',
       items: [
@@ -86,6 +87,7 @@ const linkClass = (path?: string) =>
       items: [
         { label: 'INQUIRIES', path: '/inquiries' },
         { label: 'FAQ', path: '/faq' },
+        { label: 'CONTACT INFORMATION', href: DISCORD, external: true },
       ],
     },
     { items: [{ label: 'PERSCOM', path: '/personnel' }] },
@@ -240,16 +242,29 @@ const linkClass = (path?: string) =>
                   className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-56 bg-[#0a0a0a] border border-white/10 shadow-2xl z-50"
                 >
                   <div className="py-2">
-                    {contactItems.map((item) => (
-                      <Link
-                        key={item.path}
-                        to={item.path}
-                        onClick={() => setContactOpen(false)}
-                        className="block px-5 py-3 text-[13px] font-semibold tracking-[0.12em] text-white/80 hover:text-white hover:bg-white/5 transition-colors font-['Inter',sans-serif]"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+                    {contactItems.map((item) =>
+                      item.external ? (
+                        <a
+                          key={item.label}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setContactOpen(false)}
+                          className="block px-5 py-3 text-[13px] font-semibold tracking-[0.12em] text-white/80 hover:text-white hover:bg-white/5 transition-colors font-['Inter',sans-serif]"
+                        >
+                          {item.label}
+                        </a>
+                      ) : (
+                        <Link
+                          key={item.path}
+                          to={item.path!}
+                          onClick={() => setContactOpen(false)}
+                          className="block px-5 py-3 text-[13px] font-semibold tracking-[0.12em] text-white/80 hover:text-white hover:bg-white/5 transition-colors font-['Inter',sans-serif]"
+                        >
+                          {item.label}
+                        </Link>
+                      )
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -318,18 +333,31 @@ const linkClass = (path?: string) =>
                     </p>
                   )}
                   <div className="space-y-1">
-                    {section.items.map((item) => (
-                      <Link
-                        key={item.path}
-                        to={item.path}
-                        onClick={() => setMobileOpen(false)}
-                        className={`block py-2.5 font-['Barlow',sans-serif] text-2xl font-semibold tracking-[0.12em] uppercase ${
-                          isActive(item.path) ? 'text-[#b91c1c]' : 'text-white'
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+                    {section.items.map((item) =>
+                      item.external ? (
+                        <a
+                          key={item.label}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setMobileOpen(false)}
+                          className="block py-2.5 font-['Barlow',sans-serif] text-2xl font-semibold tracking-[0.12em] uppercase text-white"
+                        >
+                          {item.label}
+                        </a>
+                      ) : (
+                        <Link
+                          key={item.path}
+                          to={item.path!}
+                          onClick={() => setMobileOpen(false)}
+                          className={`block py-2.5 font-['Barlow',sans-serif] text-2xl font-semibold tracking-[0.12em] uppercase ${
+                            isActive(item.path!) ? 'text-[#b91c1c]' : 'text-white'
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      )
+                    )}
                   </div>
                 </div>
               ))}
