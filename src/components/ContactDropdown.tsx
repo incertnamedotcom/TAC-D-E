@@ -5,7 +5,6 @@ const ContactDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -16,11 +15,10 @@ const ContactDropdown = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const items = [
-    { label: "INQUIRIES", href: "/inquiries" },
-    { label: "FAQ", href: "/faq" },
-    { label: "CONTACT INFORMATION", href: "/contact" },
-  ];
+  const handleDiscordClick = () => {
+    setIsOpen(false);
+    window.open("https://discord.gg/8HpRpHsHVT", "_blank", "noopener,noreferrer");
+  };
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -49,16 +47,28 @@ const ContactDropdown = () => {
             className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-56 bg-[#111] border border-white/10 shadow-xl z-50"
           >
             <div className="py-2">
-              {items.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="block px-5 py-3 text-[12px] uppercase tracking-[0.15em] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
-                >
-                  {item.label}
-                </a>
-              ))}
+              <a
+                href="/inquiries"
+                onClick={() => setIsOpen(false)}
+                className="block px-5 py-3 text-[12px] uppercase tracking-[0.15em] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+              >
+                INQUIRIES
+              </a>
+
+              <a
+                href="/faq"
+                onClick={() => setIsOpen(false)}
+                className="block px-5 py-3 text-[12px] uppercase tracking-[0.15em] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+              >
+                FAQ
+              </a>
+
+              <button
+                onClick={handleDiscordClick}
+                className="w-full text-left block px-5 py-3 text-[12px] uppercase tracking-[0.15em] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+              >
+                CONTACT INFORMATION
+              </button>
             </div>
           </motion.div>
         )}

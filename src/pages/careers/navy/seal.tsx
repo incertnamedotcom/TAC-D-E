@@ -25,7 +25,7 @@ const NavySeal = () => {
       <section className="relative h-[90vh] md:h-screen flex items-center justify-center overflow-hidden">
         <motion.div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(https://i.imgur.com/4H14H0j.jpg)` }}
+          style={{ backgroundImage: `url(https://i.imgur.com/wFtBFlJ.jpeg)` }}
           initial={{ y: 0 }}
           whileInView={{ y: -40 }}
           viewport={{ once: false, amount: 0.3 }}
@@ -140,21 +140,21 @@ const NavySeal = () => {
           {/* Requirements */}
           <div className="border border-white/10 mb-3 overflow-hidden">
             <button
-              onClick={() => toggleSection("requirements")}
+              onClick={() => toggleSection("Qualifications & Requirements")}
               className="w-full flex items-center justify-between px-5 py-4 bg-white/[0.03] hover:bg-white/[0.06] transition-colors"
             >
               <span className="font-medium tracking-widest uppercase text-xs text-white/90">
-                Requirements
+                Qualifications & Requirements
               </span>
               <ChevronDown
                 className={`w-4 h-4 text-white/40 transition-transform duration-300 ${
-                  openSection === "requirements" ? "rotate-180" : ""
+                  openSection === "Qualifications & Requirements" ? "rotate-180" : ""
                 }`}
               />
             </button>
             
             <AnimatePresence>
-              {openSection === "requirements" && (
+              {openSection === "Qualifications & Requirements" && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
@@ -164,12 +164,11 @@ const NavySeal = () => {
                 >
                   <div className="px-5 py-5 text-white/55 text-sm leading-relaxed border-t border-white/10 bg-white/[0.02]">
                     <ul className="list-disc pl-5 space-y-2">
-                      <li>Must be a U.S. citizen</li>
-                      <li>Must be 28 years of age or younger (waivers available up to age 30)</li>
-                      <li>Must meet minimum Armed Services Vocational Aptitude Battery (ASVAB) scores</li>
-                      <li>Must pass the SEAL Physical Screening Test (PST)</li>
-                      <li>Must be eligible for a secret security clearance</li>
-                      <li>Must complete BUD/S and SEAL Qualification Training</li>
+                      <li>Legal copy of Arma 3</li>
+                      <li>Applicants must be 18 years of age or older. (Waivers may be applicable.)</li>
+                      <li>Must be fluent in English & have a working microphone (Including No static, Echo & so on..)</li>
+                      <li>Must not be participating in other organization</li>
+                      <li>Basic Arma 3 Experience</li>
                     </ul>
                   </div>
                 </motion.div>
@@ -307,7 +306,7 @@ const NavySeal = () => {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
+      {/* ── FOOTER (slightly larger than original, not as big as last) ── */}
       <footer className="w-full bg-black border-t border-white/10 mt-auto font-['Barlow',sans-serif]">
         <div className="w-full px-3 sm:px-5 md:px-8 lg:px-10 xl:px-12">
 
@@ -321,10 +320,10 @@ const NavySeal = () => {
             </div>
 
             <div className="lg:max-w-xl xl:max-w-2xl">
-              <h4 className="text-white text-xs uppercase tracking-[0.3em] font-semibold mb-4 text-left">
+              <h4 className="text-white text-[13px] uppercase tracking-[0.3em] font-semibold mb-4 text-left">
                 MISSION
               </h4>
-              <p className="text-white/65 text-sm md:text-[15px] leading-relaxed text-left">
+              <p className="text-white/65 text-[15px] md:text-base leading-relaxed text-left">
                 The United States is a maritime nation, and the U.S. Navy protects America at sea. Alongside our allies and partners, we defend freedom, preserve economic prosperity and keep the seas open and free.
               </p>
             </div>
@@ -343,41 +342,41 @@ const NavySeal = () => {
             </div>
 
             <div className="md:col-span-2 md:col-start-4">
-              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-semibold mb-5">
+              <h4 className="text-[#b91c1c] text-[13px] uppercase tracking-[0.25em] font-semibold mb-5">
                 Recruitment
               </h4>
               <div className="space-y-3">
-                <Link to="/requirements" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/requirements" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Requirements
                 </Link>
-                <Link to="/apply" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/apply" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Apply Now
                 </Link>
               </div>
             </div>
 
             <div className="md:col-span-2">
-              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-semibold mb-5">
+              <h4 className="text-[#b91c1c] text-[13px] uppercase tracking-[0.25em] font-semibold mb-5">
                 Get in Touch
               </h4>
               <div className="space-y-3">
-                <Link to="/faq" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/faq" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   FAQs
                 </Link>
-                <Link to="/career-assessment" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/career-assessment" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Career Assessment
                 </Link>
-                <Link to="/inquiries" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/inquiries" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Contact
                 </Link>
               </div>
             </div>
 
             <div className="md:col-span-3 md:col-start-10">
-              <h4 className="text-white text-xs uppercase tracking-[0.3em] font-semibold mb-1">
+              <h4 className="text-white text-[13px] uppercase tracking-[0.3em] font-semibold mb-1">
                 Connect
               </h4>
-              <p className="text-white/40 text-xs tracking-[0.2em] uppercase mb-6">
+              <p className="text-white/40 text-[13px] tracking-[0.2em] uppercase mb-6">
                 Get Social With Us
               </p>
               
@@ -423,12 +422,12 @@ const NavySeal = () => {
 
           <div className="border-t border-white/10 py-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <p className="text-white/35 text-xs tracking-[0.15em]">
-                © 2026 TACDEV
+              <p className="text-white/40 text-xs tracking-[0.15em]">
+                © 2026 NSWTACD&E
               </p>
               
-              <p className="text-white/30 text-[11px] leading-relaxed max-w-3xl text-left md:text-right">
-                TACDEV is an independent, fictional Arma 3 community project. We have no connection to DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any actual military organization. Everything on this site, including names, procedures, structure, branding, and content, is purely fictional and created for community purposes.
+              <p className="text-white/30 text-[12px] leading-relaxed max-w-3xl text-left md:text-right">
+               TACDEV is a fictional Arma 3 community project. It is not affiliated with or endorsed by any real military or government organization.
               </p>
             </div>
           </div>
@@ -436,6 +435,6 @@ const NavySeal = () => {
       </footer>
     </div>
   );
-}
+};
 
 export default NavySeal;

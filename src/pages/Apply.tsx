@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 const DISCORD = "https://discord.gg/8HpRpHsHVT";
 const FOOTER_LOGO = "https://i.ibb.co/DP0007hy/footer-logo-1.png";
 const NAVBAR_COIN = "https://i.imgur.com/xEtxsCw.png";
-const HERO_IMAGE = "https://i.imgur.com/DCjut3E.jpeg";
+const HERO_IMAGE = "https://i.imgur.com/NWP7SZN.png";
 const GUTTER = "px-6 md:px-12 lg:px-20 xl:px-28";
 const DISCORD_CLIENT_ID = "1560566512857915472";
 const REDIRECT_URI = encodeURIComponent(window.location.origin + "/apply");

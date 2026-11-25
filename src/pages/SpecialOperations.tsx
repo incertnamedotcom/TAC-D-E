@@ -5,26 +5,35 @@ import { motion } from "motion/react";
 const DISCORD = "https://discord.gg/8HpRpHsHVT";
 const FOOTER_LOGO = "https://i.ibb.co/DP0007hy/footer-logo-1.png";
 const NAVBAR_COIN = "https://i.imgur.com/xEtxsCw.png";
-const HERO_BG = "https://i.imgur.com/4H14H0j.jpg";
+const HERO_BG = "https://i.imgur.com/NWP7SZN.png";
 
 const careerCards = [
   {
     slug: "so",
     title: "SPECIAL WARFARE OPERATOR",
-    image: "https://i.imgur.com/Uq1iVWx.jpg",
+    image: "https://i.imgur.com/wFtBFlJ.jpeg",
     href: "/careers/navy/seal",
+    // Shift image slightly to the right
+    objectPosition: "70% center",
+    scale: 1.10,
   },
   {
     slug: "eod",
     title: "EXPLOSIVE ORDNANCE DISPOSAL TECHNICIAN",
-    image: "https://i.imgur.com/4H14H0j.jpg",
+    image: "https://i.imgur.com/oi3fCdr.jpeg",
     href: "/careers/navy/eod",
+    // Slightly zoomed out
+    objectPosition: "center",
+    scale: 1.0,
   },
   {
     slug: "hm-atf",
     title: "HOSPITAL CORPSMAN ADVANCED TECHNICAL FIELD",
     image: "https://i.imgur.com/AtWnhpx.png",
     href: "/careers/navy/corpsman",
+    // Zoomed in
+    objectPosition: "center",
+    scale: 1.15,
   },
 ];
 
@@ -37,7 +46,7 @@ const SpecialOperations = () => {
     <div className="min-h-screen bg-black text-white font-['Barlow',sans-serif]">
 
       {/* ── HERO ── */}
-      <section className="relative h-[70vh] min-h-[520px] overflow-hidden">
+      <section className="relative h-[85vh] min-h-[620px] overflow-hidden">
         <motion.div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${HERO_BG})` }}
@@ -46,8 +55,15 @@ const SpecialOperations = () => {
           viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: 1.4, ease: "easeOut" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
+
+        {/* Long soft fade that matches the reference */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 via-35% via-black/70 to-black" />
+        
+        {/* Extra heavy bottom layer for the deep black dissolve */}
+        <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-black via-black/90 to-transparent" />
+
+        {/* Subtle side vignette */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/25" />
 
         <div className="relative z-10 h-full flex items-center justify-center">
           <div className="w-full max-w-7xl mx-auto px-6 md:px-12 text-center">
@@ -83,7 +99,7 @@ const SpecialOperations = () => {
             transition={{ duration: 0.7, delay: 0.1 }}
             className="text-white/65 text-base md:text-lg leading-relaxed max-w-3xl mx-auto"
           >
-            Only 1% of Americans have what it takes to be in Navy Special Operations. These elite warriors don’t just serve—they clear explosives, navigate high-speed combat boats, conduct deep-sea dives, or execute missions behind enemy lines—all with precision, skill and focus.
+            Only 1% of Americans have what it takes to be in Navy Special Operations. These elite warriors don’t just serve, they clear explosives, navigate high speed combat boats, conduct deep-sea dives, or execute missions behind enemy lines all with precision, skill and focus.
           </motion.p>
         </div>
       </section>
@@ -108,11 +124,12 @@ const SpecialOperations = () => {
                     src={card.image}
                     alt={card.title}
                     className="absolute inset-0 w-full h-full object-cover"
-                    initial={{ scale: 1.05 }}
-                    whileInView={{ scale: 1 }}
+                    style={{ objectPosition: card.objectPosition }}
+                    initial={{ scale: card.scale }}
+                    whileInView={{ scale: card.scale }}
                     viewport={{ once: false, amount: 0.4 }}
                     transition={{ duration: 1.2, ease: "easeOut" }}
-                    whileHover={{ scale: 1.08 }}
+                    whileHover={{ scale: card.scale + 0.04 }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 
@@ -216,10 +233,10 @@ const SpecialOperations = () => {
             </div>
 
             <div className="lg:max-w-xl xl:max-w-2xl">
-              <h4 className="text-white text-xs uppercase tracking-[0.3em] font-semibold mb-4 text-left">
+              <h4 className="text-white text-[13px] uppercase tracking-[0.3em] font-semibold mb-4 text-left">
                 MISSION
               </h4>
-              <p className="text-white/65 text-sm md:text-[15px] leading-relaxed text-left">
+              <p className="text-white/65 text-[15px] md:text-base leading-relaxed text-left">
                 The United States is a maritime nation, and the U.S. Navy protects America at sea. Alongside our allies and partners, we defend freedom, preserve economic prosperity and keep the seas open and free.
               </p>
             </div>
@@ -238,41 +255,38 @@ const SpecialOperations = () => {
             </div>
 
             <div className="md:col-span-2 md:col-start-4">
-              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-semibold mb-5">
+              <h4 className="text-[#b91c1c] text-[13px] uppercase tracking-[0.25em] font-semibold mb-5">
                 Recruitment
               </h4>
               <div className="space-y-3">
-                <Link to="/requirements" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/requirements" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Requirements
-                </Link>
-                <Link to="/apply" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
-                  Apply Now
                 </Link>
               </div>
             </div>
 
             <div className="md:col-span-2">
-              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-semibold mb-5">
+              <h4 className="text-[#b91c1c] text-[13px] uppercase tracking-[0.25em] font-semibold mb-5">
                 Get in Touch
               </h4>
               <div className="space-y-3">
-                <Link to="/faq" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/faq" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   FAQs
                 </Link>
-                <Link to="/career-assessment" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/career-assessment" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Career Assessment
                 </Link>
-                <Link to="/inquiries" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/inquiries" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Contact
                 </Link>
               </div>
             </div>
 
             <div className="md:col-span-3 md:col-start-10">
-              <h4 className="text-white text-xs uppercase tracking-[0.3em] font-semibold mb-1">
+              <h4 className="text-white text-[13px] uppercase tracking-[0.3em] font-semibold mb-1">
                 Connect
               </h4>
-              <p className="text-white/40 text-xs tracking-[0.2em] uppercase mb-6">
+              <p className="text-white/40 text-[13px] tracking-[0.2em] uppercase mb-6">
                 Get Social With Us
               </p>
               
@@ -318,12 +332,12 @@ const SpecialOperations = () => {
 
           <div className="border-t border-white/10 py-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <p className="text-white/35 text-xs tracking-[0.15em]">
-                © 2026 TACDEV
+              <p className="text-white/40 text-xs tracking-[0.15em]">
+                © 2026 NSWTACD&E
               </p>
               
-              <p className="text-white/30 text-[11px] leading-relaxed max-w-3xl text-left md:text-right">
-                TACDEV is an independent, fictional Arma 3 community project. We have no connection to DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any actual military organization. Everything on this site, including names, procedures, structure, branding, and content, is purely fictional and created for community purposes.
+              <p className="text-white/30 text-[12px] leading-relaxed max-w-3xl text-left md:text-right">
+                TACDEV is a fictional Arma 3 community project. It is not affiliated with or endorsed by any real military or government organization.
               </p>
             </div>
           </div>
@@ -331,6 +345,6 @@ const SpecialOperations = () => {
       </footer>
     </div>
   );
-}
+};
 
 export default SpecialOperations;

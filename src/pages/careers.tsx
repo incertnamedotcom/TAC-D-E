@@ -11,7 +11,7 @@ const highPriorityRoles = [
   {
     slug: "eod",
     fullName: "Explosive Ordnance Disposal Technician",
-    image: "https://i.imgur.com/oi3fCdr.jpeg",          // ← updated
+    image: "https://i.imgur.com/oi3fCdr.jpeg",
     href: "/careers/navy/eod",
   },
   {
@@ -155,10 +155,10 @@ const Careers = () => {
                       src={role.image}
                       alt={role.fullName}
                       className="absolute inset-0 w-full h-full object-cover opacity-65 group-hover:opacity-80 transition-opacity duration-500"
-                      initial={{ scale: 1.05 }}
+                      initial={{ scale: 1.03 }}
                       whileInView={{ scale: 1 }}
-                      viewport={{ once: false, amount: 0.4 }}
-                      transition={{ duration: 1.2, ease: "easeOut" }}
+                      viewport={{ once: true, amount: 0.4 }}
+                      transition={{ duration: 1.1, ease: "easeOut" }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
 
@@ -180,26 +180,19 @@ const Careers = () => {
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             
-            {/* Left - Image (slightly larger + very subtle movement) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="relative overflow-hidden flex items-center justify-center"
-            >
+            {/* Image container - stays completely fixed in place */}
+            <div className="relative overflow-hidden flex items-center justify-center">
               <motion.img
                 src="https://i.imgur.com/9s5TVx8.png"
                 alt="Operators"
                 className="w-full max-h-[460px] object-contain"
-                initial={{ scale: 1.04, y: 0 }}
-                whileInView={{ scale: 1, y: -12 }}
-                viewport={{ once: false, amount: 0.4 }}
-                transition={{ duration: 1.6, ease: "easeOut" }}
+                initial={{ scale: 1.03 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
               />
-            </motion.div>
+            </div>
 
-            {/* Right - Text */}
             <div className="flex flex-col justify-center">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white uppercase leading-tight mb-6">
                 Find Where<br />You Belong
@@ -232,7 +225,6 @@ const Careers = () => {
           </h2>
           <div className="w-8 h-[1px] bg-white/25 mx-auto mb-10" />
 
-          {/* Larger Special Operations box */}
           <div className="border border-zinc-800/80 bg-zinc-950/50 overflow-hidden">
             <button
               onClick={() => setSpecOpsOpen(!specOpsOpen)}
@@ -327,10 +319,10 @@ const Careers = () => {
             </div>
 
             <div className="lg:max-w-xl xl:max-w-2xl">
-              <h4 className="text-white text-xs uppercase tracking-[0.3em] font-semibold mb-4 text-left">
+              <h4 className="text-white text-[13px] uppercase tracking-[0.3em] font-semibold mb-4 text-left">
                 MISSION
               </h4>
-              <p className="text-white/65 text-sm md:text-[15px] leading-relaxed text-left">
+              <p className="text-white/65 text-[15px] md:text-base leading-relaxed text-left">
                 The United States is a maritime nation, and the U.S. Navy protects America at sea. Alongside our allies and partners, we defend freedom, preserve economic prosperity and keep the seas open and free.
               </p>
             </div>
@@ -349,41 +341,41 @@ const Careers = () => {
             </div>
 
             <div className="md:col-span-2 md:col-start-4">
-              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-semibold mb-5">
+              <h4 className="text-[#b91c1c] text-[13px] uppercase tracking-[0.25em] font-semibold mb-5">
                 Recruitment
               </h4>
               <div className="space-y-3">
-                <Link to="/requirements" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/requirements" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Requirements
                 </Link>
-                <Link to="/apply" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/apply" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Apply Now
                 </Link>
               </div>
             </div>
 
             <div className="md:col-span-2">
-              <h4 className="text-[#b91c1c] text-xs uppercase tracking-[0.25em] font-semibold mb-5">
+              <h4 className="text-[#b91c1c] text-[13px] uppercase tracking-[0.25em] font-semibold mb-5">
                 Get in Touch
               </h4>
               <div className="space-y-3">
-                <Link to="/faq" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/faq" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   FAQs
                 </Link>
-                <Link to="/career-assessment" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/career-assessment" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Career Assessment
                 </Link>
-                <Link to="/inquiries" className="block text-sm tracking-[0.15em] text-white/70 hover:text-white transition-colors">
+                <Link to="/inquiries" className="block text-[15px] tracking-[0.15em] text-white/70 hover:text-white transition-colors">
                   Contact
                 </Link>
               </div>
             </div>
 
             <div className="md:col-span-3 md:col-start-10">
-              <h4 className="text-white text-xs uppercase tracking-[0.3em] font-semibold mb-1">
+              <h4 className="text-white text-[13px] uppercase tracking-[0.3em] font-semibold mb-1">
                 Connect
               </h4>
-              <p className="text-white/40 text-xs tracking-[0.2em] uppercase mb-6">
+              <p className="text-white/40 text-[13px] tracking-[0.2em] uppercase mb-6">
                 Get Social With Us
               </p>
               
@@ -429,12 +421,12 @@ const Careers = () => {
 
           <div className="border-t border-white/10 py-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <p className="text-white/35 text-xs tracking-[0.15em]">
-                © 2026 TACDEV
+              <p className="text-white/40 text-xs tracking-[0.15em]">
+                © 2026 NSWTACD&E
               </p>
               
-              <p className="text-white/30 text-[11px] leading-relaxed max-w-3xl text-left md:text-right">
-                TACDEV is an independent, fictional Arma 3 community project. We have no connection to DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any actual military organization. Everything on this site, including names, procedures, structure, branding, and content, is purely fictional and created for community purposes.
+              <p className="text-white/30 text-[12px] leading-relaxed max-w-3xl text-left md:text-right">
+               TACDEV is a fictional Arma 3 community project. It is not affiliated with or endorsed by any real military or government organization.
               </p>
             </div>
           </div>
