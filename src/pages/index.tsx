@@ -51,7 +51,7 @@ export default function Index() {
 
             <div className="text-white/85 text-base md:text-lg leading-relaxed">
               <p>
-                We are a Naval Special Warfare based organization modeled on the structure and standards of Naval Special Warfare Development Group. We develop tactics, techniques, and procedures in a realistic, immersive setting built around professionalism and teamwork, with real expectations for performance, commitment, and accountability.
+                Naval Special Warfare Tactical Development & Evaluations is a demanding organization dedicated to the development, testing, and evaluation of advanced maritime, ground, and airborne tactics, techniques, and procedures. Modeled on the structure and standards of Naval Special Warfare Development Group
               </p>
             </div>
           </motion.div>
