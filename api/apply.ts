@@ -10,11 +10,12 @@ const CAREER_PATHS = new Map<string, string>([
   ['L02A', 'L02A - SPECIAL OPERATIONS INDEPENDENT DUTY CORPSMAN'],
 ]);
 
-// Max length per text field. The reason now lives in an embed description (4096 limit),
-// so it can be longer. Worst case total stays well under Discord's 6000-character message cap.
+// Max length per text field.
+// Components V2 allows 4000 characters of text across the whole message, so the worst case
+// (every field at its limit) is kept safely under that.
 const LIMITS = {
   fullName: 100,
-  reason: 2000,
+  reason: 1400,
   armaExperience: 200,
   otherUnits: 300,
   howFound: 300,
@@ -24,6 +25,7 @@ type TextField = keyof typeof LIMITS;
 
 const MAX_PRIOR_UNITS = 6;
 const PRIOR_UNIT_FIELD_MAX = 100;
+const PRIOR_UNITS_TEXT_MAX = 900;
 
 interface DiscordUser {
   id: string;
@@ -37,6 +39,19 @@ interface DiscordUser {
 const COOLDOWN_MS = 10 * 60 * 1000;
 const lastSubmission = new Map<string, number>();
 
+// Discord Components V2 constants
+const FLAG_IS_COMPONENTS_V2 = 1 << 15; // 32768
+const COMPONENT = {
+  ACTION_ROW: 1,
+  BUTTON: 2,
+  SECTION: 9,
+  TEXT_DISPLAY: 10,
+  THUMBNAIL: 11,
+  SEPARATOR: 14,
+  CONTAINER: 17,
+} as const;
+const BUTTON_STYLE_LINK = 5;
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -49,9 +64,9 @@ function readText(source: Record<string, unknown>, key: TextField): string | nul
   return trimmed;
 }
 
-// Optional list of prior units. Returns a nicely formatted block for the embed ("None listed" if empty).
+// Optional list of prior units. Returns a formatted block ("None listed" if empty).
 function readPriorUnits(value: unknown): string {
-  if (!Array.isArray(value)) return '*None listed*';
+  if (!Array.isArray(value)) return 'None listed';
 
   const lines: string[] = [];
   for (const item of value.slice(0, MAX_PRIOR_UNITS)) {
@@ -59,11 +74,11 @@ function readPriorUnits(value: unknown): string {
     const name = typeof item.name === 'string' ? item.name.trim().slice(0, PRIOR_UNIT_FIELD_MAX) : '';
     const contact = typeof item.contact === 'string' ? item.contact.trim().slice(0, PRIOR_UNIT_FIELD_MAX) : '';
     if (name || contact) {
-      lines.push(`**${lines.length + 1}.** ${name || '—'}\n⠀⠀↳ Contact: ${contact || '—'}`);
+      lines.push(`**${lines.length + 1}.** ${name || '-'}  |  Contact: ${contact || '-'}`);
     }
   }
 
-  return lines.length ? lines.join('\n').slice(0, 1024) : '*None listed*';
+  return lines.length ? lines.join('\n').slice(0, PRIOR_UNITS_TEXT_MAX) : 'None listed';
 }
 
 // Turns multi-line text into a Discord block quote so long answers stay readable.
@@ -152,83 +167,103 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: `Invalid application. Please check: ${problems.join(', ')}.` });
   }
 
-  // 4. The server builds the message. The browser cannot inject its own embeds or pings.
+  // 4. The server builds the message. The browser cannot inject its own content or pings.
   const applicationNumber = `NSW-${new Date().getFullYear()}-${randomBytes(3).toString('hex').toUpperCase()}`;
   const displayName = user.global_name || user.username;
   const avatarUrl = user.avatar
     ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`
     : 'https://cdn.discordapp.com/embed/avatars/0.png';
-  const timestamp = new Date().toISOString();
+  const submittedAt = Math.floor(now / 1000);
 
-  const RED = 0xb91c1c;
-  const DARK = 0x2b2d31;
+  const separator = (spacing: 1 | 2 = 1) => ({
+    type: COMPONENT.SEPARATOR,
+    divider: true,
+    spacing,
+  });
 
-  // Embed 1: header / applicant summary
-  const headerEmbed = {
-    color: RED,
-    author: { name: 'ENLISTMENT APPLICATION RECEIVED', icon_url: avatarUrl },
-    title: fullName,
-    description:
-      `## ${careerLabel}\n` +
-      `**Form ID:** \`${applicationNumber}\`\n` +
-      `**Applicant:** <@${user.id}> (@${user.username})\n` +
-      `**Display Name:** ${displayName}\n` +
-      `**Discord ID:** \`${user.id}\``,
-    thumbnail: { url: avatarUrl },
-    fields: [
-      { name: '🎖️  Career Path', value: `\`${careerKey}\``, inline: true },
-      { name: '🕒  Arma 3 Experience', value: armaExperience, inline: true },
-      { name: '🔎  How They Found Us', value: howFound, inline: true },
-    ],
-  };
-
-  // Embed 2: motivation (full width, block quoted)
-  const intentEmbed = {
-    color: DARK,
-    title: 'STATEMENT OF INTENT',
-    description: `*Why do you want to join our organization? Why do you believe this is the one for you?*\n\n${quote(reason)}`,
-  };
-
-  // Embed 3: organization history
-  const organizationsEmbed = {
-    color: DARK,
-    title: 'ORGANIZATION HISTORY',
-    fields: [
-      {
-        name: 'Currently participating in any other organizations?',
-        value: quote(otherUnits),
-        inline: false,
-      },
-      {
-        name: 'Prior unit / organization affiliations',
-        value: priorUnits,
-        inline: false,
-      },
-    ],
-  };
-
-  // Embed 4: agreements + footer
-  const agreementsEmbed = {
-    color: RED,
-    title: 'AGREEMENTS CONFIRMED',
-    description:
-      '✅  Information is accurate; background checks consented to\n' +
-      '✅  Will attend an interview if selected\n' +
-      '✅  Understands false information may result in discharge, even after graduation\n' +
-      '✅  Will disassociate from all other organizations before training',
-    footer: { text: `TACDEV  •  Naval Special Warfare Enlistment System  •  ${applicationNumber}` },
-    timestamp,
-  };
+  const text = (content: string) => ({
+    type: COMPONENT.TEXT_DISPLAY,
+    content,
+  });
 
   const payload = {
-    username: 'TACDEV Recruitment',
-    content: `📋 **New application** from <@${user.id}>  •  \`${applicationNumber}\``,
+    flags: FLAG_IS_COMPONENTS_V2,
     allowed_mentions: { parse: [] as string[] },
-    embeds: [headerEmbed, intentEmbed, organizationsEmbed, agreementsEmbed],
+    components: [
+      {
+        type: COMPONENT.CONTAINER,
+        accent_color: 0xb91c1c,
+        components: [
+          // Header: applicant details on the left, avatar on the right
+          {
+            type: COMPONENT.SECTION,
+            components: [
+              text(
+                `# ${fullName}\n` +
+                  `## ${careerLabel}\n` +
+                  `**Form ID:** \`${applicationNumber}\`\n` +
+                  `**Applicant:** <@${user.id}> (@${user.username})\n` +
+                  `**Display Name:** ${displayName}\n` +
+                  `**Discord ID:** \`${user.id}\`\n` +
+                  `**Submitted:** <t:${submittedAt}:F>`
+              ),
+            ],
+            accessory: {
+              type: COMPONENT.THUMBNAIL,
+              media: { url: avatarUrl },
+            },
+          },
+
+          separator(2),
+
+          text(
+            `### Statement of Intent\n` +
+              `*Why do you want to join our organization? Why do you believe this is the one for you?*\n\n` +
+              quote(reason)
+          ),
+
+          separator(2),
+
+          text(
+            `### Background\n` +
+              `**Arma 3 experience**\n${quote(armaExperience)}\n\n` +
+              `**How they found us**\n${quote(howFound)}`
+          ),
+
+          separator(2),
+
+          text(
+            `### Organization History\n` +
+              `**Currently participating in any other organizations?**\n${quote(otherUnits)}\n\n` +
+              `**Prior unit / organization affiliations**\n${priorUnits}`
+          ),
+
+          separator(2),
+
+          {
+            type: COMPONENT.ACTION_ROW,
+            components: [
+              {
+                type: COMPONENT.BUTTON,
+                style: BUTTON_STYLE_LINK,
+                label: 'View Discord Profile',
+                url: `https://discord.com/users/${user.id}`,
+              },
+            ],
+          },
+
+          text(`-# TACDEV  |  Naval Special Warfare Enlistment System  |  ${applicationNumber}`),
+        ],
+      },
+    ],
   };
 
   try {
-    const response = await fetch(webhookUrl, {
+    // Components V2 on a webhook requires with_components=true
+    const url = new URL(webhookUrl);
+    url.searchParams.set('with_components', 'true');
+
+    const response = await fetch(url.toString(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -236,7 +271,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     if (!response.ok) {
-      console.error('Discord webhook returned', response.status);
+      console.error('Discord webhook returned', response.status, await response.text().catch(() => ''));
       return res.status(502).json({ error: 'Could not deliver your application. Please try again later.' });
     }
 
