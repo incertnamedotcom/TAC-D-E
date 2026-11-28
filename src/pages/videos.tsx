@@ -55,42 +55,79 @@ const Videos = () => {
 </section>
 
       {/* ── CONTENT ── */}
-      <div className="relative z-10 max-w-5xl mx-auto px-6 pb-28 pt-20">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 pb-28 pt-20">
         
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="border border-zinc-800 bg-zinc-900/40 overflow-hidden"
-        >
-          {/* Video */}
-          <div className="aspect-video bg-black">
-            <iframe
-              width="100%"
-              height="100%"
-              src="https://www.youtube.com/embed/3jNtxCj71O8"
-              title="Runs"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            />
-          </div>
-
-          {/* Caption */}
-          <div className="px-8 py-7 border-t border-zinc-800">
-            <div className="flex items-center gap-4 mb-2">
-              <div className="w-8 h-[2px] bg-[#b91c1c]" />
-              <p className="text-[#b91c1c] text-xs uppercase tracking-[0.2em] font-medium">
-                Featured
-              </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          {/* Video 1 - Runs */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="border border-zinc-800 bg-zinc-900/40 overflow-hidden"
+          >
+            <div className="aspect-video bg-black">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/3jNtxCj71O8"
+                title="Runs"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
             </div>
-            <h3 className="font-heading text-2xl md:text-3xl tracking-wide text-white">
-              Runs
-            </h3>
-          </div>
-        </motion.div>
+
+            <div className="px-6 py-6 border-t border-zinc-800">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-6 h-[2px] bg-[#b91c1c]" />
+                <p className="text-[#b91c1c] text-xs uppercase tracking-[0.2em] font-medium">
+                  Featured
+                </p>
+              </div>
+              <h3 className="font-heading text-xl md:text-2xl tracking-wide text-white">
+                Runs
+              </h3>
+            </div>
+          </motion.div>
+
+          {/* Video 2 - Forged by the Sea */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="border border-zinc-800 bg-zinc-900/40 overflow-hidden"
+          >
+            <div className="aspect-video bg-black">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/7MZdB_rtt9s"
+                title="Forged by the Sea"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+
+            <div className="px-6 py-6 border-t border-zinc-800">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-6 h-[2px] bg-[#b91c1c]" />
+                <p className="text-[#b91c1c] text-xs uppercase tracking-[0.2em] font-medium">
+                  Featured
+                </p>
+              </div>
+              <h3 className="font-heading text-xl md:text-2xl tracking-wide text-white">
+                Forged by the Sea
+              </h3>
+            </div>
+          </motion.div>
+
+        </div>
 
         <motion.p
           initial={{ opacity: 0 }}

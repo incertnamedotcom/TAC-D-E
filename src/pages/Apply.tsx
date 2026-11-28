@@ -453,7 +453,7 @@ const Apply = () => {
 
                   <div>
                     <label className="block text-sm font-medium tracking-[0.15em] text-white/70 mb-3 uppercase">
-                      Are you currently participating in any other Arma 3 units?
+                      Are you currently participating in any other organizations?
                     </label>
                     <input
                       name="otherUnits"
