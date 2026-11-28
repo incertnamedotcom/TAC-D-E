@@ -10,10 +10,11 @@ const CAREER_PATHS = new Map<string, string>([
   ['L02A', 'L02A - SPECIAL OPERATIONS INDEPENDENT DUTY CORPSMAN'],
 ]);
 
-// Max length per text field. Keeps the embed well under Discord's limits (1024 per field, 6000 total).
+// Max length per text field. The reason now lives in an embed description (4096 limit),
+// so it can be longer. Worst case total stays well under Discord's 6000-character message cap.
 const LIMITS = {
   fullName: 100,
-  reason: 1000,
+  reason: 2000,
   armaExperience: 200,
   otherUnits: 300,
   howFound: 300,
@@ -28,6 +29,7 @@ interface DiscordUser {
   id: string;
   username: string;
   global_name?: string | null;
+  avatar?: string | null;
 }
 
 // Best-effort cooldown. Serverless instances do not share memory, so this only stops
@@ -47,20 +49,29 @@ function readText(source: Record<string, unknown>, key: TextField): string | nul
   return trimmed;
 }
 
-// Optional list of prior units. Returns a display string for the embed ("None" if empty).
+// Optional list of prior units. Returns a nicely formatted block for the embed ("None listed" if empty).
 function readPriorUnits(value: unknown): string {
-  if (!Array.isArray(value)) return 'None';
+  if (!Array.isArray(value)) return '*None listed*';
 
   const lines: string[] = [];
   for (const item of value.slice(0, MAX_PRIOR_UNITS)) {
     if (!isRecord(item)) continue;
     const name = typeof item.name === 'string' ? item.name.trim().slice(0, PRIOR_UNIT_FIELD_MAX) : '';
     const contact = typeof item.contact === 'string' ? item.contact.trim().slice(0, PRIOR_UNIT_FIELD_MAX) : '';
-    if (name || contact) lines.push(`• ${name || '—'} | ${contact || '—'}`);
+    if (name || contact) {
+      lines.push(`**${lines.length + 1}.** ${name || '—'}\n⠀⠀↳ Contact: ${contact || '—'}`);
+    }
   }
 
-  return lines.length ? lines.join('\n').slice(0, 1024) : 'None';
+  return lines.length ? lines.join('\n').slice(0, 1024) : '*None listed*';
 }
+
+// Turns multi-line text into a Discord block quote so long answers stay readable.
+const quote = (text: string) =>
+  text
+    .split('\n')
+    .map((line) => `> ${line}`)
+    .join('\n');
 
 // Asks Discord who the token belongs to, and makes sure it was issued to THIS app.
 async function verifyDiscordToken(accessToken: string): Promise<DiscordUser | null> {
@@ -133,7 +144,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!careerLabel) problems.push('career path');
   if (!reason) problems.push(`reason (max ${LIMITS.reason} characters)`);
   if (!armaExperience) problems.push(`Arma 3 experience (max ${LIMITS.armaExperience} characters)`);
-  if (!otherUnits) problems.push(`other units (max ${LIMITS.otherUnits} characters)`);
+  if (!otherUnits) problems.push(`other organizations (max ${LIMITS.otherUnits} characters)`);
   if (!howFound) problems.push(`how you found us (max ${LIMITS.howFound} characters)`);
   if (!agreed) problems.push('agreements');
 
@@ -144,30 +155,76 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // 4. The server builds the message. The browser cannot inject its own embeds or pings.
   const applicationNumber = `NSW-${new Date().getFullYear()}-${randomBytes(3).toString('hex').toUpperCase()}`;
   const displayName = user.global_name || user.username;
+  const avatarUrl = user.avatar
+    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`
+    : 'https://cdn.discordapp.com/embed/avatars/0.png';
+  const timestamp = new Date().toISOString();
 
-  const payload = {
-    content: `**ENLISTMENT APPLICATION RECEIVED**\nApplicant: <@${user.id}>\nForm ID: \`${applicationNumber}\``,
-    allowed_mentions: { parse: [] as string[] },
-    embeds: [
+  const RED = 0xb91c1c;
+  const DARK = 0x2b2d31;
+
+  // Embed 1: header / applicant summary
+  const headerEmbed = {
+    color: RED,
+    author: { name: 'ENLISTMENT APPLICATION RECEIVED', icon_url: avatarUrl },
+    title: fullName,
+    description:
+      `## ${careerLabel}\n` +
+      `**Form ID:** \`${applicationNumber}\`\n` +
+      `**Applicant:** <@${user.id}> (@${user.username})\n` +
+      `**Display Name:** ${displayName}\n` +
+      `**Discord ID:** \`${user.id}\``,
+    thumbnail: { url: avatarUrl },
+    fields: [
+      { name: '🎖️  Career Path', value: `\`${careerKey}\``, inline: true },
+      { name: '🕒  Arma 3 Experience', value: armaExperience, inline: true },
+      { name: '🔎  How They Found Us', value: howFound, inline: true },
+    ],
+  };
+
+  // Embed 2: motivation (full width, block quoted)
+  const intentEmbed = {
+    color: DARK,
+    title: 'STATEMENT OF INTENT',
+    description: `*Why do you want to join our organization? Why do you believe this is the one for you?*\n\n${quote(reason)}`,
+  };
+
+  // Embed 3: organization history
+  const organizationsEmbed = {
+    color: DARK,
+    title: 'ORGANIZATION HISTORY',
+    fields: [
       {
-        title: `ENLISTMENT FORM  •  ${applicationNumber}`,
-        color: 0xb91c1c,
-        description: 'A new enlistment application has been submitted for review.',
-        fields: [
-          { name: 'Full Name', value: fullName, inline: true },
-          { name: 'Discord', value: `${displayName} (@${user.username})`.slice(0, 1024), inline: true },
-          { name: 'Discord ID', value: user.id, inline: true },
-          { name: 'Preferred Career Path', value: careerLabel, inline: false },
-          { name: 'Why do you want to join our organization?', value: reason, inline: false },
-          { name: 'How long have you been playing Arma 3?', value: armaExperience, inline: false },
-          { name: 'Are you currently participating in any other Arma 3 units?', value: otherUnits, inline: false },
-          { name: 'Prior Unit / Organization Affiliation (name | contact)', value: priorUnits, inline: false },
-          { name: 'How did you find out about our organization?', value: howFound, inline: false },
-        ],
-        footer: { text: 'TACDEV  •  Naval Special Warfare Enlistment System' },
-        timestamp: new Date().toISOString(),
+        name: 'Currently participating in any other organizations?',
+        value: quote(otherUnits),
+        inline: false,
+      },
+      {
+        name: 'Prior unit / organization affiliations',
+        value: priorUnits,
+        inline: false,
       },
     ],
+  };
+
+  // Embed 4: agreements + footer
+  const agreementsEmbed = {
+    color: RED,
+    title: 'AGREEMENTS CONFIRMED',
+    description:
+      '✅  Information is accurate; background checks consented to\n' +
+      '✅  Will attend an interview if selected\n' +
+      '✅  Understands false information may result in discharge, even after graduation\n' +
+      '✅  Will disassociate from all other organizations before training',
+    footer: { text: `TACDEV  •  Naval Special Warfare Enlistment System  •  ${applicationNumber}` },
+    timestamp,
+  };
+
+  const payload = {
+    username: 'TACDEV Recruitment',
+    content: `📋 **New application** from <@${user.id}>  •  \`${applicationNumber}\``,
+    allowed_mentions: { parse: [] as string[] },
+    embeds: [headerEmbed, intentEmbed, organizationsEmbed, agreementsEmbed],
   };
 
   try {
